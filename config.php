@@ -69,3 +69,7 @@ sort($config_files);
 foreach ($config_files as $filename) {
 	require_once($filename);
 }
+
+if (file_exists(APP_DIR . 'local-settings.php')) {
+	require_once(APP_DIR . 'local-settings.php');
+}

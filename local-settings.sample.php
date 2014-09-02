@@ -5,7 +5,7 @@ if (defined('LOCAL_SETTINGS_LOADED')) {
 }
 
 //if true, all system email will log to a logs/email_log instead of sending
-define('LOG_MAIL', true);
+define('MAIL_LOG_OVERRIDE', true);
 
 //if not null, all system email will go to this address (and no others)
 define('DEV_EMAIL', 'colehafner@gmail.com');
