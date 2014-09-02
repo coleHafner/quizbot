@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="quizzer">
+  <table name="classroom" phpName="Classroom">
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="session_id" phpName="SessionId" type="INTEGER" size="10" required="true"/>
+    <column name="name" phpName="Name" type="VARCHAR" size="255" required="true"/>
+    <column name="archived" phpName="Archived" type="INTEGER_TIMESTAMP" size="10" required="false"/>
+    <column name="created" phpName="Created" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="updated" phpName="Updated" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <foreign-key foreignTable="session" name="classroom_ibfk_1" onUpdate="CASCADE">
+      <reference local="session_id" foreign="id"/>
+    </foreign-key>
+    <index name="created_by_user_id">
+      <index-column name="session_id"/>
+    </index>
+  </table>
+  <table name="device" phpName="Device">
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="session_id" phpName="SessionId" type="INTEGER" size="10" required="true"/>
+    <column name="classroom_id" phpName="ClassroomId" type="INTEGER" size="10" required="true"/>
+    <column name="user_id" phpName="UserId" type="INTEGER" size="10" required="false"/>
+    <column name="uuid" phpName="Uuid" type="VARCHAR" size="255" required="true"/>
+    <column name="nickname" phpName="Nickname" type="VARCHAR" size="255" required="false"/>
+    <column name="archived" phpName="Archived" type="INTEGER_TIMESTAMP" size="10" required="false"/>
+    <column name="created" phpName="Created" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="updated" phpName="Updated" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <foreign-key foreignTable="user" name="device_ibfk_4" onUpdate="CASCADE">
+      <reference local="user_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="classroom" name="device_ibfk_2" onUpdate="CASCADE">
+      <reference local="classroom_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="session" name="device_ibfk_3" onUpdate="CASCADE">
+      <reference local="session_id" foreign="id"/>
+    </foreign-key>
+    <index name="created_by_user_id">
+      <index-column name="session_id"/>
+    </index>
+    <index name="classroom_id">
+      <index-column name="classroom_id"/>
+    </index>
+    <index name="user_id">
+      <index-column name="user_id"/>
+    </index>
+  </table>
+  <table name="question" phpName="Question">
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="session_id" phpName="SessionId" type="INTEGER" size="10" required="true"/>
+    <column name="quiz_id" phpName="QuizId" type="INTEGER" size="10" required="true"/>
+    <column name="correct_answer_id" phpName="CorrectAnswerId" type="INTEGER" size="10" required="false"/>
+    <column name="correct_answer_boolean" phpName="CorrectAnswerBoolean" type="VARCHAR" size="1" required="false"/>
+    <column name="type" phpName="Type" type="INTEGER" size="10" required="true"/>
+    <column name="text" phpName="Text" type="VARCHAR" size="1080" required="true"/>
+    <column name="archived" phpName="Archived" type="INTEGER_TIMESTAMP" size="10" required="false"/>
+    <column name="created" phpName="Created" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="updated" phpName="Updated" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <foreign-key foreignTable="question_answer" name="question_ibfk_3" onUpdate="CASCADE">
+      <reference local="correct_answer_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="session" name="question_ibfk_1" onUpdate="CASCADE">
+      <reference local="session_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="quiz" name="question_ibfk_2" onUpdate="CASCADE">
+      <reference local="quiz_id" foreign="id"/>
+    </foreign-key>
+    <index name="created_by_user_id">
+      <index-column name="session_id"/>
+    </index>
+    <index name="session_id">
+      <index-column name="session_id"/>
+    </index>
+    <index name="quiz_id">
+      <index-column name="quiz_id"/>
+    </index>
+    <index name="quiz_id_2">
+      <index-column name="quiz_id"/>
+    </index>
+    <index name="correct_answer_id">
+      <index-column name="correct_answer_id"/>
+    </index>
+  </table>
+  <table name="question_answer" phpName="QuestionAnswer">
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="question_id" phpName="QuestionId" type="INTEGER" size="10" required="true"/>
+    <column name="session_id" phpName="SessionId" type="INTEGER" size="10" required="true"/>
+    <column name="priority" phpName="Priority" type="INTEGER" size="10" required="true" defaultValue="0"/>
+    <column name="text" phpName="Text" type="VARCHAR" size="1080" required="true"/>
+    <column name="archived" phpName="Archived" type="INTEGER_TIMESTAMP" size="10" required="false"/>
+    <column name="created" phpName="Created" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="updated" phpName="Updated" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <foreign-key foreignTable="session" name="question_answer_ibfk_2" onUpdate="CASCADE">
+      <reference local="session_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="question" name="question_answer_ibfk_1" onUpdate="CASCADE">
+      <reference local="question_id" foreign="id"/>
+    </foreign-key>
+    <index name="question_id">
+      <index-column name="question_id"/>
+    </index>
+    <index name="created_by_user_id">
+      <index-column name="session_id"/>
+    </index>
+  </table>
+  <table name="quiz" phpName="Quiz">
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="session_id" phpName="SessionId" type="INTEGER" size="10" required="true"/>
+    <column name="classroom_id" phpName="ClassroomId" type="INTEGER" size="10" required="true"/>
+    <column name="name" phpName="Name" type="VARCHAR" size="255" required="true"/>
+    <column name="archived" phpName="Archived" type="INTEGER_TIMESTAMP" size="10" required="false"/>
+    <column name="created" phpName="Created" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="updated" phpName="Updated" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <foreign-key foreignTable="session" name="quiz_ibfk_1" onUpdate="CASCADE">
+      <reference local="session_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="classroom" name="quiz_ibfk_2" onUpdate="CASCADE">
+      <reference local="classroom_id" foreign="id"/>
+    </foreign-key>
+    <index name="created_by_user_id">
+      <index-column name="session_id"/>
+    </index>
+    <index name="classroom_id">
+      <index-column name="classroom_id"/>
+    </index>
+  </table>
+  <table name="quiz_session" phpName="QuizSession">
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="session_id" phpName="SessionId" type="INTEGER" size="10" required="true"/>
+    <column name="quiz_id" phpName="QuizId" type="INTEGER" size="10" required="true"/>
+    <column name="opened" phpName="Opened" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="closed" phpName="Closed" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <foreign-key foreignTable="quiz" name="quiz_session_ibfk_3" onUpdate="CASCADE">
+      <reference local="quiz_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="session" name="quiz_session_ibfk_4" onUpdate="CASCADE">
+      <reference local="session_id" foreign="id"/>
+    </foreign-key>
+    <index name="created_by_user_id">
+      <index-column name="session_id"/>
+    </index>
+    <index name="quiz_id">
+      <index-column name="quiz_id"/>
+    </index>
+  </table>
+  <table name="quiz_session_attempt" phpName="QuizSessionAttempt">
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="quiz_session_question_id" phpName="QuizSessionQuestionId" type="INTEGER" size="10" required="true"/>
+    <column name="device_id" phpName="DeviceId" type="INTEGER" size="10" required="true"/>
+    <column name="user_id" phpName="UserId" type="INTEGER" size="10" required="true"/>
+    <column name="answer_choice" phpName="AnswerChoice" type="INTEGER" size="10" required="true"/>
+    <column name="answer_text" phpName="AnswerText" type="VARCHAR" size="1080" required="true"/>
+    <column name="created" phpName="Created" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <foreign-key foreignTable="quiz_session_question" name="quiz_session_attempt_ibfk_1" onUpdate="CASCADE">
+      <reference local="quiz_session_question_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="device" name="quiz_session_attempt_ibfk_2" onUpdate="CASCADE">
+      <reference local="device_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="user" name="quiz_session_attempt_ibfk_3" onUpdate="CASCADE">
+      <reference local="user_id" foreign="id"/>
+    </foreign-key>
+    <index name="created_by_user_id">
+      <index-column name="device_id"/>
+    </index>
+    <index name="classroom_id">
+      <index-column name="answer_choice"/>
+    </index>
+    <index name="quiz_session_question_id">
+      <index-column name="quiz_session_question_id"/>
+    </index>
+    <index name="user_id">
+      <index-column name="user_id"/>
+    </index>
+    <index name="user_id_2">
+      <index-column name="user_id"/>
+    </index>
+  </table>
+  <table name="quiz_session_question" phpName="QuizSessionQuestion">
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="quiz_session_id" phpName="QuizSessionId" type="INTEGER" size="10" required="true"/>
+    <column name="question_id" phpName="QuestionId" type="INTEGER" size="10" required="true"/>
+    <column name="opened" phpName="Opened" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="closed" phpName="Closed" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <foreign-key foreignTable="question" name="quiz_session_question_ibfk_2" onUpdate="CASCADE">
+      <reference local="question_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="quiz_session" name="quiz_session_question_ibfk_1" onUpdate="CASCADE">
+      <reference local="quiz_session_id" foreign="id"/>
+    </foreign-key>
+    <index name="quiz_id">
+      <index-column name="question_id"/>
+    </index>
+    <index name="quiz_session_id">
+      <index-column name="quiz_session_id"/>
+    </index>
+  </table>
+  <table name="session" phpName="Session">
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="user_id" phpName="UserId" type="INTEGER" size="10" required="false"/>
+    <column name="classroom_id" phpName="ClassroomId" type="INTEGER" size="10" required="false"/>
+    <column name="ip_address" phpName="IpAddress" type="VARCHAR" size="100" required="false"/>
+    <column name="user_agent" phpName="UserAgent" type="VARCHAR" size="255" required="false"/>
+    <column name="started" phpName="Started" type="INTEGER_TIMESTAMP" required="false"/>
+    <column name="ended" phpName="Ended" type="INTEGER_TIMESTAMP" required="false"/>
+    <foreign-key foreignTable="classroom" name="session_ibfk_2" onUpdate="CASCADE">
+      <reference local="classroom_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="user" name="session_ibfk_1" onUpdate="CASCADE">
+      <reference local="user_id" foreign="id"/>
+    </foreign-key>
+    <index name="user_id">
+      <index-column name="user_id"/>
+    </index>
+    <index name="user_id_2">
+      <index-column name="user_id"/>
+    </index>
+    <index name="classroom_id">
+      <index-column name="classroom_id"/>
+    </index>
+  </table>
+  <table name="user" phpName="User">
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="session_id" phpName="SessionId" type="INTEGER" size="10" required="true"/>
+    <column name="email" phpName="Email" type="VARCHAR" size="255" required="true"/>
+    <column name="password" phpName="Password" type="VARCHAR" size="200" required="true"/>
+    <column name="salt" phpName="Salt" type="VARCHAR" size="200" required="true"/>
+    <column name="type" phpName="Type" type="INTEGER" required="true"/>
+    <column name="active" phpName="Active" type="TINYINT" size="255" required="true" defaultValue="1"/>
+    <column name="last_login" phpName="LastLogin" type="INTEGER_TIMESTAMP" size="10" required="false"/>
+    <column name="created" phpName="Created" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="updated" phpName="Updated" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <foreign-key foreignTable="session" name="user_ibfk_1" onUpdate="CASCADE">
+      <reference local="session_id" foreign="id"/>
+    </foreign-key>
+    <unique name="email">
+      <unique-column name="email"/>
+    </unique>
+    <unique name="user_unique_email">
+      <unique-column name="email"/>
+    </unique>
+    <index name="session_id">
+      <index-column name="session_id"/>
+    </index>
+  </table>
+  <table name="user_role" phpName="UserRole">
+    <column name="user_id" phpName="UserId" type="INTEGER" size="10" primaryKey="true" required="true"/>
+    <column name="role_id" phpName="RoleId" type="INTEGER" size="10" primaryKey="true" required="true"/>
+    <column name="session_id" phpName="SessionId" type="INTEGER" size="10" required="true"/>
+    <column name="classroom_id" phpName="ClassroomId" type="INTEGER" size="10" required="false"/>
+    <column name="archived" phpName="Archived" type="INTEGER_TIMESTAMP" size="10" required="false"/>
+    <column name="created" phpName="Created" type="INTEGER_TIMESTAMP" size="10" required="false"/>
+    <column name="updated" phpName="Updated" type="INTEGER_TIMESTAMP" size="10" required="false"/>
+    <foreign-key foreignTable="user" name="user_role_ibfk_1" onUpdate="CASCADE">
+      <reference local="user_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="classroom" name="user_role_ibfk_2" onUpdate="CASCADE">
+      <reference local="classroom_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="session" name="user_role_ibfk_3" onUpdate="CASCADE">
+      <reference local="session_id" foreign="id"/>
+    </foreign-key>
+    <index name="classroom_id">
+      <index-column name="classroom_id"/>
+    </index>
+    <index name="classroom_id_2">
+      <index-column name="classroom_id"/>
+    </index>
+    <index name="session_id">
+      <index-column name="session_id"/>
+    </index>
+  </table>
+</database>

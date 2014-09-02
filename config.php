@@ -24,6 +24,13 @@ define('LIBRARIES_DIR', APP_DIR . 'libraries/');
 // directory for logs
 define('LOGS_DIR', APP_DIR . 'logs/');
 
+// directory for helpers
+define('HELPERS_DIR', APP_DIR . 'helpers/');
+
+if (!defined('SYSTEM_SALT')) {
+	define('SYSTEM_SALT', '%b8$KrdSU.WF!WZ)J@qqG1mEZ.*[e#;ZDwn)eAF:v*:Y}"qhG]M1)xQ}W\6%J_Ux\`@)0a/:$:,oF:g-MiSkR?7s4{l04*5s/F-Vk_6Oc^\m}Z:=&tzoBoIOK<NaET"]');
+}
+
 // output errors to brower
 ini_set('display_errors', true);
 
@@ -47,6 +54,10 @@ if (get_magic_quotes_gpc()) {
 
 ClassLoader::addRepository('LIBRARIES', LIBRARIES_DIR);
 ClassLoader::import('LIBRARIES:dabl');
+
+foreach (glob(HELPERS_DIR . '/*.php') as $helper) {
+	require_once $helper;
+}
 
 if (is_file(APP_DIR . 'vendor/autoload.php')) {
 	require_once APP_DIR . 'vendor/autoload.php';

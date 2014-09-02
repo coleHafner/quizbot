@@ -2,3 +2,5 @@
 .DS_Store
 nbproject/
 logs/
+config/connections.ini
+local-settings.php
