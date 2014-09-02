@@ -15,7 +15,13 @@ class QuestionsController extends LoggedInApplicationController {
 	 */
 	function index() {
 
-		$q = Question::getQuery(@$_GET);
+		$q = null;
+
+		if (!App::hasPerm(Perm::REACTIVATE)) {
+			$q = Query::create()->add(Question::ARCHIVED, null);
+		}
+
+		$q = Question::getQuery(@$_GET, $q);
 
 		// paginate
 		$limit = empty($_REQUEST['limit']) ? 25 : $_REQUEST['limit'];
