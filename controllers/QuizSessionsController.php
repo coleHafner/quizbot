@@ -49,13 +49,18 @@ class QuizSessionsController extends LoggedInApplicationController {
 	function question($id, $action) {
 
 		$manager = $this->_getSessionManager($id);
-		$question = $action == 'next' ? $manager->getNextQuestion() : $manager->getPrevQuestion();
+		$manager->closeLastQuestion();
+
+		$question = $manager->getPrevQuestion();
+
+		if ($action == 'next') {
+			$question = $manager->getNextQuestion();
+		}
 
 		if ($action == 'next' && !$question && $manager->sessionIsOver()) {
 			$this->redirect(site_url('quiz-sessions/end') . '/' . $manager->getQuizSessionId());
 		}
 
-		$manager->closeQuestions();
 		$manager->addSessionQuestion($question);
 		$this['question'] = $question;
 		$this['quiz_session'] = $manager->getQuizSession();

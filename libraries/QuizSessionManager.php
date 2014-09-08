@@ -163,6 +163,25 @@ class QuizSessionManager {
 		return true;
 	}
 
+	function closeLastQuestion() {
+
+		$questions = $this->getQuestions();
+		$index = $this->getCurrentIndex();
+		echo 'current index ';
+		var_dump($index);
+		echo '--------------------------' . PHP_EOL;
+		$question = @$questions[$index];
+
+		if (!$question) {
+			return false;
+		}
+
+		$qsq = $this->addSessionQuestion($question);
+		$qsq->close();
+		$qsq->save();
+		return true;
+	}
+
 	/**
 	 * @return boolean
 	 */
@@ -278,9 +297,18 @@ class QuizSessionManager {
 		$this->session = $session;
 	}
 
+	/**
+	 * @return	boolean
+	 */
+	private function hasSessionQuestions() {
+		return QuizSessionQuestion::doCount(Query::create()
+			->add(QuizSessionQuestion::QUIZ_SESSION_ID, $this->getQuizSessionId())
+		) > 0;
+	}
+
 	private function getCurrentIndex() {
 
-		if (!count($this->getSessionQuestions())) {
+		if (!$this->hasSessionQuestions()) {
 			return 0;
 		}
 
@@ -293,10 +321,23 @@ class QuizSessionManager {
 
 			$i++;
 		}
+
+		echo 'no closed qsqs --------------------------' . PHP_EOL;
+		echo 'qsq count: ' . count($this->getSessionQuestions()) . '--------------------------' . PHP_EOL;
+		echo 'q count: ' . count($this->getQuestions()) . '--------------------------' . PHP_EOL;
+
+		if (count($this->getSessionQuestions()) < count($this->getQuestions())) {
+			$index = count($this->getSessionQuestions()) + 1;
+			echo 'returning ' . $index . '----' . PHP_EOL;
+			return $index;
+		}
+
+		return null;
 	}
 
 	private function getQuestion($next) {
 		$i = $this->getCurrentIndex();
+		echo 'idnex @ question' . $i . '--------';
 
 		if ($i === null) {
 			return null;
@@ -304,12 +345,7 @@ class QuizSessionManager {
 
 		$target_index = $next ? $i + 1 : $i - 1;
 		$questions = $this->getQuestions();
-
-		if ($target_index <= count($questions) && $target_index > 0) {
-			return $questions[$target_index];
-		}
-
-		return null;
+		return @$questions[$target_index];
 	}
 
 	/**
