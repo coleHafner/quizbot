@@ -36,6 +36,10 @@ class Role {
 			Perm::QUIZ_DELETE,
 			Perm::QUIZZES_MANAGE,
 
+			Perm::QUIZSESSION_CREATE,
+			Perm::QUIZSESSION_EDIT,
+			Perm::QUIZSESSIONS_MANAGE,
+
 			Perm::REACTIVATE,
 
 			Perm::RESULT_CREATE,
@@ -71,6 +75,10 @@ class Role {
 			Perm::QUIZ_EDIT,
 			Perm::QUIZ_DELETE,
 			Perm::QUIZZES_MANAGE,
+
+			Perm::QUIZSESSION_CREATE,
+			Perm::QUIZSESSION_EDIT,
+			Perm::QUIZSESSIONS_MANAGE,
 
 			Perm::RESULTS_MANAGE,
 

@@ -313,6 +313,14 @@ ul {
 	border-radius: 3px;
 }
 
+.pad-bottom {
+	padding-bottom: 10px;
+}
+
+.margin-bottom {
+	margin-bottom: 10px;
+}
+
 @media all and (max-width: 599px) {
 	.form-field-label, .field-label {
 		float: none;

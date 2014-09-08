@@ -18,7 +18,15 @@ abstract class ApplicationController extends Controller {
 
 		}else if ('QuizSessionAttempts' == $current_controller) {
 			$this['current_page'] = 'Results';
+
+		}else if ('Questions' == $current_controller && !App::hasPerm(Perm::QUESTIONS_MANAGE)) {
+			$this['current_page'] = 'Quizzes';
+
+		}else if (in_array($current_controller, array('QuizSessions', 'QuizSessionAttempts'))) {
+			$this['current_page'] = 'Quiz Results';
 		}
+
+		$this['actions']['Dashboard'] = site_url('dashboard');
 
 		if (App::hasPerm(Perm::QUIZZES_MANAGE)) {
 			$this['actions']['Quizzes'] = site_url('quizzes');
@@ -32,8 +40,8 @@ abstract class ApplicationController extends Controller {
 			$this['actions']['Clickers'] = site_url('devices');
 		}
 
-		if (App::hasPerm(Perm::RESULTS_MANAGE)) {
-			$this['actions']['Results'] = site_url('quiz-session-attempts');
+		if (App::hasPerm(Perm::QUIZSESSIONS_MANAGE)) {
+			$this['actions']['Quiz Results'] = site_url('quiz-sessions');
 		}
 
 		if (App::hasPerm(Perm::USERS_MANAGE)) {

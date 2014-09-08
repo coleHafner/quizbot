@@ -17,9 +17,12 @@ class Quiz extends baseQuiz {
 	}
 
 	/**
-	 * @return	User
+	 * @return	int
 	 */
-	public function getCreatedByUser() {
-		return $this->getSession() ? $this->getSession()->getUser() : null;
+	public function getNumQuestions() {
+		return Question::doCount(Query::create()
+			->add(Question::QUIZ_ID, $this->getId())
+			->add(Question::ARCHIVED, null)
+		);
 	}
 }

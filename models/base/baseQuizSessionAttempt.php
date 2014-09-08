@@ -151,7 +151,7 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	protected $correct;
 
 	/**
-	 * `created` INTEGER_TIMESTAMP NOT NULL DEFAULT ''
+	 * `created` INTEGER_TIMESTAMP DEFAULT ''
 	 * @var int
 	 */
 	protected $created;

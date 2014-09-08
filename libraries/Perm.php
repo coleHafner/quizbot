@@ -26,6 +26,10 @@ class Perm {
 	const QUIZ_DELETE = 3;
 	const QUIZZES_MANAGE = 4;
 
+	const QUIZSESSION_CREATE = 36;
+	const QUIZSESSION_EDIT = 37;
+	const QUIZSESSIONS_MANAGE = 38;
+
 	const REACTIVATE = 28;
 
 	const RESULT_CREATE = 22;

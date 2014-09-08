@@ -41,7 +41,7 @@ class IndexController extends ApplicationController {
 			App::setClassroomId($classroom->getId());
 		}
 
-		$goto = !empty($_REQUEST['return']) ? $_REQUEST['return'] : '/';
+		$goto = !empty($_REQUEST['return']) ? $_REQUEST['return'] : '/dashboard';
 		$this->redirect($goto);
 	}
 

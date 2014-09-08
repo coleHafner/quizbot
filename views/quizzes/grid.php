@@ -91,18 +91,28 @@ if (isset($_REQUEST['dir'])) {
 				<?php if (App::can(Perm::ACTION_EDIT, $quiz)) : ?>
 					<a
 						class="button"
-						data-icon="carat-1-e"
+						data-icon="circle-triangle-e"
+						title="Edit Quiz"
+						href="<?php echo site_url('quiz-sessions/edit/?quiz_id=' . $quiz->getId()) ?>">
+						&nbsp;Start
+					</a>
+				<?php endif; ?>
+
+				<?php if (App::can(Perm::ACTION_EDIT, $quiz)) : ?>
+					<a
+						class="button"
+						data-icon="info"
 						href="<?php echo site_url('questions?quiz_id=' . $quiz->getId()) ?>">
-						Questions
+						&nbsp;Questions
 					</a>
 				<?php endif; ?>
 
 				<?php if (App::hasPerm(Perm::RESULTS_MANAGE)) : ?>
 					<a
 						class="button"
-						data-icon="carat-1-e"
+						data-icon="star"
 						href="<?php echo site_url('quiz-session-attempts?quiz_id=' . $quiz->getId()) ?>">
-						Results
+						&nbsp;Results
 					</a>
 				<?php endif; ?>
 			</td>

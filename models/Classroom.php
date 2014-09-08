@@ -42,6 +42,17 @@ class Classroom extends baseClassroom {
 		return parent::getUserRolesQuery($q);
 	}
 
+	/**
+	 * @return	Quiz[]
+	 */
+	function getQuizzes() {
+		$q = Query::create()
+			->add(Quiz::CLASSROOM_ID, $this->getId())
+			->orderBy(Quiz::NAME, Query::ASC);
+		
+		return Quiz::doSelect($q);
+	}
+
 	function __toString() {
 		return $this->getName();
 	}

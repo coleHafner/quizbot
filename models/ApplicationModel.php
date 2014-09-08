@@ -16,8 +16,23 @@ abstract class ApplicationModel extends Model {
 		return method_exists($this, 'getSession') && $this->getSession() ? $this->getSession()->getUser() : null;
 	}
 
+	/**
+	 * @return string
+	 */
 	function getCreatedByUserEmail() {
 		return $this->getCreatedByUser() ? $this->getCreatedByUser()->getEmail() : null;
+	}
+
+	/**
+	 * @param	User	$user
+	 * @return	boolean
+	 */
+	function wasCreatedBy(User $user) {
+		if (!method_exists($this, 'getSession')) {
+			return false;
+		}
+
+		return ($this->getSession() && $this->getSession()->getUserId() == $user->getId());
 	}
 
 	function delete($override = false) {

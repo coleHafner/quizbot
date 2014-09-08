@@ -120,8 +120,8 @@
     <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
     <column name="session_id" phpName="SessionId" type="INTEGER" size="10" required="true"/>
     <column name="quiz_id" phpName="QuizId" type="INTEGER" size="10" required="true"/>
-    <column name="opened" phpName="Opened" type="INTEGER_TIMESTAMP" size="10" required="true"/>
-    <column name="closed" phpName="Closed" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="opened" phpName="Opened" type="INTEGER_TIMESTAMP" size="10" required="false"/>
+    <column name="closed" phpName="Closed" type="INTEGER_TIMESTAMP" size="10" required="false"/>
     <foreign-key foreignTable="quiz" name="quiz_session_ibfk_3" onUpdate="CASCADE">
       <reference local="quiz_id" foreign="id"/>
     </foreign-key>
@@ -143,7 +143,7 @@
     <column name="answer_choice" phpName="AnswerChoice" type="INTEGER" size="10" required="true"/>
     <column name="answer_text" phpName="AnswerText" type="VARCHAR" size="1080" required="true"/>
     <column name="correct" phpName="Correct" type="TINYINT" size="1" required="true"/>
-    <column name="created" phpName="Created" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="created" phpName="Created" type="INTEGER_TIMESTAMP" size="10" required="false"/>
     <foreign-key foreignTable="quiz_session_question" name="quiz_session_attempt_ibfk_1" onUpdate="CASCADE">
       <reference local="quiz_session_question_id" foreign="id"/>
     </foreign-key>
@@ -197,7 +197,7 @@
     <column name="question_id" phpName="QuestionId" type="INTEGER" size="10" required="true"/>
     <column name="question_text" phpName="QuestionText" type="VARCHAR" size="1080" required="true"/>
     <column name="opened" phpName="Opened" type="INTEGER_TIMESTAMP" size="10" required="true"/>
-    <column name="closed" phpName="Closed" type="INTEGER_TIMESTAMP" size="10" required="true"/>
+    <column name="closed" phpName="Closed" type="INTEGER_TIMESTAMP" size="10" required="false"/>
     <foreign-key foreignTable="quiz_session" name="quiz_session_question_ibfk_1" onUpdate="CASCADE">
       <reference local="quiz_session_id" foreign="id"/>
     </foreign-key>

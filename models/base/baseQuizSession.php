@@ -115,13 +115,13 @@ abstract class baseQuizSession extends ApplicationModel {
 	protected $quiz_id;
 
 	/**
-	 * `opened` INTEGER_TIMESTAMP NOT NULL DEFAULT ''
+	 * `opened` INTEGER_TIMESTAMP DEFAULT ''
 	 * @var int
 	 */
 	protected $opened;
 
 	/**
-	 * `closed` INTEGER_TIMESTAMP NOT NULL DEFAULT ''
+	 * `closed` INTEGER_TIMESTAMP DEFAULT ''
 	 * @var int
 	 */
 	protected $closed;
@@ -865,12 +865,6 @@ abstract class baseQuizSession extends ApplicationModel {
 		}
 		if (null === $this->getquiz_id()) {
 			$this->_validationErrors[] = 'quiz_id must not be null';
-		}
-		if (null === $this->getopened()) {
-			$this->_validationErrors[] = 'opened must not be null';
-		}
-		if (null === $this->getclosed()) {
-			$this->_validationErrors[] = 'closed must not be null';
 		}
 		return 0 === count($this->_validationErrors);
 	}

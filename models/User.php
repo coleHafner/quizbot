@@ -61,6 +61,9 @@ class User extends baseUser {
 		}else if ($object instanceof Device) {
 			$can = $this->hasDevicePerm($object);
 
+		}else if ($object instanceof QuizSession) {
+			$can = $this->hasQuizSessionPerm($object);
+
 		}else {
 			throw new RuntimeException('Error: Object of type ' . get_class($object) . ' is not recognized.');
 		}
@@ -150,6 +153,15 @@ class User extends baseUser {
 		}
 
 		return $this->hasClassroomPerm($device->getClassroom());
+	}
+
+	/**
+	 * @param	QuizSession		$quiz_session
+	 * @return	boolean
+	 */
+	function hasQuizSessionPerm(QuizSession $quiz_session) {
+		return $this->hasQuizPerm($quiz_session->getQuiz())
+			|| $quiz_session->wasCreatedBy($this);
 	}
 
 	/**
@@ -378,7 +390,7 @@ class User extends baseUser {
 		$password = trim($password);
 		$user = User::retrieveByEmail($email);
 
-		if ($user && $user->getActive()) {
+		if ($user && !$user->getArchived()) {
 
 			if (defined('DEV_BYPASS') && DEV_BYPASS === true) {
 				return $user;
