@@ -1,35 +1,78 @@
-<h1><?php echo $device->isNew() ? "New" : "Edit" ?> Device</h1>
+<?php $color = $device->getColor() ? $device->getColor() : Device::DEFAULT_COLOR; ?>
+
+<script type="text/javascript">
+	$(function() {
+
+		function selectColor() {
+			$('span.color').css('border', '0');
+			$('span.color[data-selected]').css('border', '2px solid #000');
+		}
+
+		var colorPicker = $('#colorpicker');
+			colorPicker.simplecolorpicker();
+			colorPicker.simplecolorpicker('selectColor', '<?= $color; ?>');
+			colorPicker.change(function() {
+				$('#color').val($(this).val());
+				selectColor();
+			});
+
+		selectColor();
+	});
+</script>
+
+<h1><?php echo $device->isNew() ? "New" : "Edit" ?> Clicker</h1>
+
 <form method="post" action="<?php echo site_url('devices/save') ?>">
 	<div class="ui-widget-content ui-corner-all ui-helper-clearfix">
+
 		<input type="hidden" name="id" value="<?php echo h($device->getId()) ?>" />
-		<div class="form-field-wrapper">
-			<label class="form-field-label" for="device_session_id">Session</label>
-			<select id="device_session_id" name="session_id">
-			<?php foreach (Session::doSelect() as $session): ?>
-				<option <?php if ($device->getSessionId() === $session->getId()) echo 'selected="selected"' ?> value="<?php echo $session->getId() ?>"><?php echo $session?></option>
-			<?php endforeach ?>
-			</select>
-		</div>
-		<div class="form-field-wrapper">
-			<label class="form-field-label" for="device_classroom_id">Classroom</label>
-			<select id="device_classroom_id" name="classroom_id">
-			<?php foreach (Classroom::doSelect() as $classroom): ?>
-				<option <?php if ($device->getClassroomId() === $classroom->getId()) echo 'selected="selected"' ?> value="<?php echo $classroom->getId() ?>"><?php echo $classroom?></option>
-			<?php endforeach ?>
-			</select>
-		</div>
-		<div class="form-field-wrapper">
-			<label class="form-field-label" for="device_uuid">Uuid</label>
-			<input id="device_uuid" type="text" name="uuid" value="<?php echo h($device->getUuid()) ?>" />
-		</div>
+		<input type="hidden" name="color" value="<?php echo h($device->getColor()) ?>" id="color" />
+
 		<div class="form-field-wrapper">
 			<label class="form-field-label" for="device_nickname">Nickname</label>
 			<input id="device_nickname" type="text" name="nickname" value="<?php echo h($device->getNickname()) ?>" />
 		</div>
+
+		<?php if (App::hasPerm(Perm::DEVICE_EDIT_UUID)) : ?>
+			<div class="form-field-wrapper">
+				<label class="form-field-label" for="device_uuid">Uuid</label>
+				<input id="device_uuid" type="text" name="uuid" value="<?php echo h($device->getUuid()) ?>" />
+			</div>
+		<?php endif; ?>
+
+		<?php if (App::hasPerm(Perm::DEVICE_EDIT_CLASSROOM) && !App::getClassroom()) : ?>
+			<div class="form-field-wrapper">
+				<label class="form-field-label" for="device_classroom_id">Classroom</label>
+				<select id="device_classroom_id" name="classroom_id" style="width:139px;">
+				<?php foreach (App::getUser()->getClassrooms() as $classroom): ?>
+					<option <?php if ($device->getClassroomId() === $classroom->getId()) echo 'selected="selected"' ?>
+						value="<?php echo $classroom->getId() ?>">
+						<?php echo $classroom?>
+					</option>
+				<?php endforeach ?>
+				</select>
+			</div>
+		<?php endif; ?>
+
 		<div class="form-field-wrapper">
-			<label class="form-field-label" for="device_archived">Archived</label>
-			<input id="device_archived" type="text" name="archived" value="<?php echo h($device->getArchived(VIEW_TIMESTAMP_FORMAT)) ?>" />
+			<label class="form-field-label" for="colorpicker">Color</label>
+
+			<select id="colorpicker">
+			  <option value="#7bd148">Green</option>
+			  <option value="#5484ed">Bold blue</option>
+			  <option value="#a4bdfc">Blue</option>
+			  <option value="#46d6db">Turquoise</option>
+			  <option value="#7ae7bf">Light green</option>
+			  <option value="#51b749">Bold green</option>
+			  <option value="#fbd75b">Yellow</option>
+			  <option value="#ffb878">Orange</option>
+			  <option value="#ff887c">Red</option>
+			  <option value="#dc2127">Bold red</option>
+			  <option value="#dbadff">Purple</option>
+			  <option value="#e1e1e1">Gray</option>
+			</select>
 		</div>
+
 	</div>
 	<div class="form-action-buttons ui-helper-clearfix">
 		<span class="button" data-icon="disk">

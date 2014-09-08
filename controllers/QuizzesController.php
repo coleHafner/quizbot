@@ -11,10 +11,10 @@ class QuizzesController extends LoggedInApplicationController {
 	 */
 	function index() {
 
-		$q = null;
+		$q = Query::create();
 
 		if (!App::hasPerm(Perm::REACTIVATE)) {
-			$q = Query::create()->add(Quizzes::ARCHIVED, null);
+			$q->add(Quiz::ARCHIVED, null);
 		}
 
 		if (!App::isAdmin()) {

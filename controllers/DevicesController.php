@@ -52,7 +52,17 @@ class DevicesController extends LoggedInApplicationController {
 
 		try {
 			$device->fromArray($_REQUEST);
+
+			if (App::getSession()) {
+				$device->setSession(App::getSession());
+			}
+
+			if (App::getClassroom()) {
+				$device->setClassroomId(App::getClassroomId());
+			}
+
 			if ($device->validate()) {
+
 				$device->save();
 				$this->flash['messages'][] = 'Device saved';
 				$this->redirect('devices/show/' . $device->getId());

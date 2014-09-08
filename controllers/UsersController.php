@@ -2,6 +2,13 @@
 
 class UsersController extends LoggedInApplicationController {
 
+	function __construct(ControllerRoute $route = null) {
+		$type = strtolower(str_replace('Controller', '', get_class($this)));
+		$this['view_dir'] = $type;
+		$this['user_type'] = ucfirst(substr($type, 0, (strlen($type) - 1)));
+		parent::__construct($route);
+	}
+
 	/**
 	 * Returns all User records matching the query. Examples:
 	 * GET /users?column=value&order_by=column&dir=DESC&limit=20&page=2&count_only
@@ -11,13 +18,7 @@ class UsersController extends LoggedInApplicationController {
 	 */
 	function index() {
 
-		$q = null;
-
-		if (!App::hasPerm(Perm::REACTIVATE)) {
-			$q = Query::create()->add(User::ACTIVE, true);
-		}
-
-		$q = User::getQuery(@$_GET, $q);
+		$q = $this->getQuery();
 
 		// paginate
 		$limit = empty($_REQUEST['limit']) ? 25 : $_REQUEST['limit'];
@@ -29,6 +30,7 @@ class UsersController extends LoggedInApplicationController {
 		if (isset($_GET['count_only'])) {
 			return $this['pager'];
 		}
+
 		return $this['users'] = $this['pager']->fetchPage();
 	}
 
@@ -50,6 +52,7 @@ class UsersController extends LoggedInApplicationController {
 	 */
 	function save($id = null) {
 		$user = $this->getUser($id);
+		$new = $user->isNew();
 		$conn = User::getConnection();
 		$conn->beginTransaction();
 
@@ -68,13 +71,16 @@ class UsersController extends LoggedInApplicationController {
 			if (empty($this->flash['errors'])
 				&& (!empty($_REQUEST['password1']) || !empty($_REQUEST['password2']))
 				&& ($_REQUEST['password1'] != $_REQUEST['password2'])) {
-				print_r($_REQUEST);die;
 				$this->flash['errors'][] = 'Passwords do not match.';
 			}
 
 			if (empty($this->flash['errors'])
 				&& (!empty($_REQUEST['password1']) || !empty($_REQUEST['password2']))) {
 				$user->setPassword(User::encryptPassword($_REQUEST['password1'], $user->getSalt()));
+			}
+
+			if (!App::hasPerm(Perm::USER_EDIT_TYPE)) {
+				$user->setType(User::TYPE_USER);
 			}
 
 			if (empty($this->flash['errors'])) {
@@ -100,19 +106,41 @@ class UsersController extends LoggedInApplicationController {
 						$user->addRole($id, App::getSession(), $classroom_id);
 						$i++;
 					}
+				}else if ($new) {
+
+					$role_id = null;
+
+					switch($this['user_type']) {
+						case 'Student':
+							$role_id = Role::STUDENT;
+							break;
+
+						case 'Teacher':
+							$role_id = Role::TEACHER;
+							break;
+					}
+
+					if ($role_id === null || !App::getClassroomId()) {
+						$user = new User;
+						throw new RuntimeException('Error: No classroom or user type defined.');
+					}
+
+					$user->addRole($role_id, App::getSession(), App::getClassroomId());
 				}
 
 				$conn->commit();
 				$this->flash['messages'][] = 'User saved';
-				$this->redirect('users/show/' . $user->getId());
+				$this->redirect($this['view_dir'] . '/show/' . $user->getId());
 			}
 
 		} catch (Exception $e) {
 			$this->flash['errors'][] = $e->getMessage();
 		}
 
+//		print_r($this->flash['errors']);
+//		print_r($user);die;
 		$conn->rollBack();
-		$this->redirect('users/edit/' . $user->getId() . '?' . http_build_query($_REQUEST));
+		$this->redirect($this['view_dir'] . '/edit/' . $user->getId() . '?' . http_build_query($_REQUEST));
 	}
 
 	/**
@@ -126,29 +154,15 @@ class UsersController extends LoggedInApplicationController {
 		return $this->getUser($id);
 	}
 
-	/**
-	 * Deletes the User with the id. Examples:
-	 * GET /users/delete/1
-	 * DELETE /rest/users/1.json
-	 */
-	function delete($id = null) {
-		$user = $this->getUser($id);
+	function getQuery() {
 
-		try {
-			if (null !== $user && $user->delete()) {
-				$this['messages'][] = 'User deleted';
-			} else {
-				$this['errors'][] = 'User could not be deleted';
-			}
-		} catch (Exception $e) {
-			$this['errors'][] = $e->getMessage();
+		$q = User::getQuery($_GET);
+
+		if (!App::hasPerm(Perm::REACTIVATE)) {
+			$q->add(User::ARCHIVED, null);
 		}
 
-		if ($this->outputFormat === 'html') {
-			$this->flash['errors'] = @$this['errors'];
-			$this->flash['messages'] = @$this['messages'];
-			$this->redirect('users');
-		}
+		return $q;
 	}
 
 	/**

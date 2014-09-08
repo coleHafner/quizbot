@@ -132,7 +132,7 @@ class App {
 		$_SESSION['classroom_id'] = $id;
 		self::$_classroom = Classroom::retrieveByPk($id);
 
-		if ($session = $this->getSession()) {
+		if ($session = self::getSession()) {
 			$session->setClassroomId($id);
 			$session->save();
 		}
@@ -215,6 +215,10 @@ class App {
 	 * @return	boolean
 	 */
 	static function can($action, $object) {
+
+		if (App::isAdmin()) {
+			return true;
+		}
 
 		$user = self::getUser();
 

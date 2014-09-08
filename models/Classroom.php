@@ -3,17 +3,43 @@
 class Classroom extends baseClassroom {
 
 	/**
-	 * @return	User
+	 * @return	User[]
 	 */
 	function getTeacher() {
+		return User::doSelectOne($this->getTeachersQuery());
+	}
 
-		$q = Query::create()
-			->setTable(User::getTableName())
-			->join(User::ID, UserRole::USER_ID)
-			->add(UserRole::ROLE_ID, Role::TEACHER)
-			->add(UserRole::CLASSROOM_ID, $this->getId())
-			->add(User::ACTIVE, true);
-		return User::doSelectOne($q);
+	/**
+	 * @return	User[]
+	 */
+	function getStudents() {
+		return User::doSelect($this->getStudentsQuery());
+
+	}
+
+	/**
+	 * @return	Query
+	 */
+	function getTeachersQuery() {
+		return $this->getUserRolesQuery(Query::create()->add(UserRole::ROLE_ID, Role::TEACHER));
+	}
+
+	/**
+	 * @return	Query
+	 */
+	function getStudentsQuery() {
+		return $this->getUserRolesQuery(Query::create()->add(UserRole::ROLE_ID, Role::STUDENT));
+	}
+
+	/**
+	 * @param	Query	$q		optional
+	 * @return	Query
+	 */
+	function getUserRolesQuery(Query $q = null) {
+		$q = $q ? clone $q : new Query;
+		$q->join(User::ID, UserRole::USER_ID);
+		$q->add(User::ARCHIVED, null);
+		return parent::getUserRolesQuery($q);
 	}
 
 	function __toString() {

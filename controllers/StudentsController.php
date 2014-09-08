@@ -1,12 +1,18 @@
 <?php
 
 class StudentsController extends UsersController {
-	public function index() {
 
+	public function getViewDir() {
+		return 'users/';
+	}
+
+
+	function getQuery() {
 		if (!App::getClassroom()) {
-			$this->redirect('/');
+			throw new RuntimeException('Error: No classroom selected. Cannot get students.');
 		}
 
-		$this['users'] = App::getClassroom()->getStudents();
+		$q = App::getClassroom()->getStudentsQuery();
+		return User::getQuery($_GET, $q);
 	}
 }

@@ -10,11 +10,13 @@ abstract class baseUser extends ApplicationModel {
 
 	const ID = 'user.id';
 	const SESSION_ID = 'user.session_id';
+	const FIRST_NAME = 'user.first_name';
+	const LAST_NAME = 'user.last_name';
 	const EMAIL = 'user.email';
 	const PASSWORD = 'user.password';
 	const SALT = 'user.salt';
 	const TYPE = 'user.type';
-	const ACTIVE = 'user.active';
+	const ARCHIVED = 'user.archived';
 	const LAST_LOGIN = 'user.last_login';
 	const CREATED = 'user.created';
 	const UPDATED = 'user.updated';
@@ -72,11 +74,13 @@ abstract class baseUser extends ApplicationModel {
 	protected static $_columns = array(
 		User::ID,
 		User::SESSION_ID,
+		User::FIRST_NAME,
+		User::LAST_NAME,
 		User::EMAIL,
 		User::PASSWORD,
 		User::SALT,
 		User::TYPE,
-		User::ACTIVE,
+		User::ARCHIVED,
 		User::LAST_LOGIN,
 		User::CREATED,
 		User::UPDATED,
@@ -89,11 +93,13 @@ abstract class baseUser extends ApplicationModel {
 	protected static $_columnNames = array(
 		'id',
 		'session_id',
+		'first_name',
+		'last_name',
 		'email',
 		'password',
 		'salt',
 		'type',
-		'active',
+		'archived',
 		'last_login',
 		'created',
 		'updated',
@@ -106,11 +112,13 @@ abstract class baseUser extends ApplicationModel {
 	protected static $_columnTypes = array(
 		'id' => Model::COLUMN_TYPE_INTEGER,
 		'session_id' => Model::COLUMN_TYPE_INTEGER,
+		'first_name' => Model::COLUMN_TYPE_VARCHAR,
+		'last_name' => Model::COLUMN_TYPE_VARCHAR,
 		'email' => Model::COLUMN_TYPE_VARCHAR,
 		'password' => Model::COLUMN_TYPE_VARCHAR,
 		'salt' => Model::COLUMN_TYPE_VARCHAR,
 		'type' => Model::COLUMN_TYPE_INTEGER,
-		'active' => Model::COLUMN_TYPE_TINYINT,
+		'archived' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
 		'last_login' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
 		'created' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
 		'updated' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
@@ -127,6 +135,18 @@ abstract class baseUser extends ApplicationModel {
 	 * @var int
 	 */
 	protected $session_id;
+
+	/**
+	 * `first_name` VARCHAR
+	 * @var string
+	 */
+	protected $first_name;
+
+	/**
+	 * `last_name` VARCHAR
+	 * @var string
+	 */
+	protected $last_name;
 
 	/**
 	 * `email` VARCHAR NOT NULL
@@ -153,10 +173,10 @@ abstract class baseUser extends ApplicationModel {
 	protected $type;
 
 	/**
-	 * `active` TINYINT NOT NULL DEFAULT 1
+	 * `archived` INTEGER_TIMESTAMP DEFAULT ''
 	 * @var int
 	 */
-	protected $active = 1;
+	protected $archived;
 
 	/**
 	 * `last_login` INTEGER_TIMESTAMP DEFAULT ''
@@ -228,6 +248,78 @@ abstract class baseUser extends ApplicationModel {
 	}
 
 	/**
+	 * Gets the value of the first_name field
+	 */
+	function getFirstName() {
+		return $this->first_name;
+	}
+
+	/**
+	 * Sets the value of the first_name field
+	 * @return User
+	 */
+	function setFirstName($value) {
+		return $this->setColumnValue('first_name', $value, Model::COLUMN_TYPE_VARCHAR);
+	}
+
+	/**
+	 * Convenience function for User::getFirstName
+	 * final because getFirstName should be extended instead
+	 * to ensure consistent behavior
+	 * @see User::getFirstName
+	 */
+	final function getFirst_name() {
+		return $this->getFirstName();
+	}
+
+	/**
+	 * Convenience function for User::setFirstName
+	 * final because setFirstName should be extended instead
+	 * to ensure consistent behavior
+	 * @see User::setFirstName
+	 * @return User
+	 */
+	final function setFirst_name($value) {
+		return $this->setFirstName($value);
+	}
+
+	/**
+	 * Gets the value of the last_name field
+	 */
+	function getLastName() {
+		return $this->last_name;
+	}
+
+	/**
+	 * Sets the value of the last_name field
+	 * @return User
+	 */
+	function setLastName($value) {
+		return $this->setColumnValue('last_name', $value, Model::COLUMN_TYPE_VARCHAR);
+	}
+
+	/**
+	 * Convenience function for User::getLastName
+	 * final because getLastName should be extended instead
+	 * to ensure consistent behavior
+	 * @see User::getLastName
+	 */
+	final function getLast_name() {
+		return $this->getLastName();
+	}
+
+	/**
+	 * Convenience function for User::setLastName
+	 * final because setLastName should be extended instead
+	 * to ensure consistent behavior
+	 * @see User::setLastName
+	 * @return User
+	 */
+	final function setLast_name($value) {
+		return $this->setLastName($value);
+	}
+
+	/**
 	 * Gets the value of the email field
 	 */
 	function getEmail() {
@@ -288,18 +380,21 @@ abstract class baseUser extends ApplicationModel {
 	}
 
 	/**
-	 * Gets the value of the active field
+	 * Gets the value of the archived field
 	 */
-	function getActive() {
-		return $this->active;
+	function getArchived($format = 'Y-m-d H:i:s') {
+		if (null === $this->archived || null === $format) {
+			return $this->archived;
+		}
+		return date($format, $this->archived);
 	}
 
 	/**
-	 * Sets the value of the active field
+	 * Sets the value of the archived field
 	 * @return User
 	 */
-	function setActive($value) {
-		return $this->setColumnValue('active', $value, Model::COLUMN_TYPE_TINYINT);
+	function setArchived($value) {
+		return $this->setColumnValue('archived', $value, Model::COLUMN_TYPE_INTEGER_TIMESTAMP);
 	}
 
 	/**
@@ -432,6 +527,24 @@ abstract class baseUser extends ApplicationModel {
 	}
 
 	/**
+	 * Searches the database for a row with a first_name
+	 * value that matches the one provided
+	 * @return User
+	 */
+	static function retrieveByFirstName($value) {
+		return static::retrieveByColumn('first_name', $value);
+	}
+
+	/**
+	 * Searches the database for a row with a last_name
+	 * value that matches the one provided
+	 * @return User
+	 */
+	static function retrieveByLastName($value) {
+		return static::retrieveByColumn('last_name', $value);
+	}
+
+	/**
 	 * Searches the database for a row with a email
 	 * value that matches the one provided
 	 * @return User
@@ -468,12 +581,12 @@ abstract class baseUser extends ApplicationModel {
 	}
 
 	/**
-	 * Searches the database for a row with a active
+	 * Searches the database for a row with a archived
 	 * value that matches the one provided
 	 * @return User
 	 */
-	static function retrieveByActive($value) {
-		return static::retrieveByColumn('active', $value);
+	static function retrieveByArchived($value) {
+		return static::retrieveByColumn('archived', $value);
 	}
 
 	/**
@@ -512,7 +625,7 @@ abstract class baseUser extends ApplicationModel {
 		$this->id = (null === $this->id) ? null : (int) $this->id;
 		$this->session_id = (null === $this->session_id) ? null : (int) $this->session_id;
 		$this->type = (null === $this->type) ? null : (int) $this->type;
-		$this->active = (null === $this->active) ? null : (int) $this->active;
+		$this->archived = (null === $this->archived) ? null : (int) $this->archived;
 		$this->last_login = (null === $this->last_login) ? null : (int) $this->last_login;
 		$this->created = (null === $this->created) ? null : (int) $this->created;
 		$this->updated = (null === $this->updated) ? null : (int) $this->updated;
@@ -626,51 +739,51 @@ abstract class baseUser extends ApplicationModel {
 	}
 
 	/**
-	 * Returns a Query for selecting device Objects(rows) from the device table
+	 * Returns a Query for selecting quiz_session_device Objects(rows) from the quiz_session_device table
 	 * with a user_id that matches $this->id.
 	 * @return Query
 	 */
-	function getDevicesRelatedByUserIdQuery(Query $q = null) {
-		return $this->getForeignObjectsQuery('device', 'user_id', 'id', $q);
+	function getQuizSessionDevicesRelatedByUserIdQuery(Query $q = null) {
+		return $this->getForeignObjectsQuery('quiz_session_device', 'user_id', 'id', $q);
 	}
 
 	/**
-	 * Returns the count of Device Objects(rows) from the device table
+	 * Returns the count of QuizSessionDevice Objects(rows) from the quiz_session_device table
 	 * with a user_id that matches $this->id.
 	 * @return int
 	 */
-	function countDevicesRelatedByUserId(Query $q = null) {
+	function countQuizSessionDevicesRelatedByUserId(Query $q = null) {
 		if (null === $this->getid()) {
 			return 0;
 		}
-		return Device::doCount($this->getDevicesRelatedByUserIdQuery($q));
+		return QuizSessionDevice::doCount($this->getQuizSessionDevicesRelatedByUserIdQuery($q));
 	}
 
 	/**
-	 * Deletes the device Objects(rows) from the device table
+	 * Deletes the quiz_session_device Objects(rows) from the quiz_session_device table
 	 * with a user_id that matches $this->id.
 	 * @return int
 	 */
-	function deleteDevicesRelatedByUserId(Query $q = null) {
+	function deleteQuizSessionDevicesRelatedByUserId(Query $q = null) {
 		if (null === $this->getid()) {
 			return 0;
 		}
-		$this->DevicesRelatedByUserId_c = array();
-		return Device::doDelete($this->getDevicesRelatedByUserIdQuery($q));
+		$this->QuizSessionDevicesRelatedByUserId_c = array();
+		return QuizSessionDevice::doDelete($this->getQuizSessionDevicesRelatedByUserIdQuery($q));
 	}
 
-	protected $DevicesRelatedByUserId_c = array();
+	protected $QuizSessionDevicesRelatedByUserId_c = array();
 
 	/**
-	 * Returns an array of Device objects with a user_id
+	 * Returns an array of QuizSessionDevice objects with a user_id
 	 * that matches $this->id.
 	 * When first called, this method will cache the result.
 	 * After that, if $this->id is not modified, the
 	 * method will return the cached result instead of querying the database
 	 * a second time(for performance purposes).
-	 * @return Device[]
+	 * @return QuizSessionDevice[]
 	 */
-	function getDevicesRelatedByUserId(Query $q = null) {
+	function getQuizSessionDevicesRelatedByUserId(Query $q = null) {
 		if (null === $this->getid()) {
 			return array();
 		}
@@ -678,91 +791,20 @@ abstract class baseUser extends ApplicationModel {
 		if (
 			null === $q
 			&& $this->getCacheResults()
-			&& !empty($this->DevicesRelatedByUserId_c)
+			&& !empty($this->QuizSessionDevicesRelatedByUserId_c)
 			&& !$this->isColumnModified('id')
 		) {
-			return $this->DevicesRelatedByUserId_c;
+			return $this->QuizSessionDevicesRelatedByUserId_c;
 		}
 
-		$result = Device::doSelect($this->getDevicesRelatedByUserIdQuery($q));
+		$result = QuizSessionDevice::doSelect($this->getQuizSessionDevicesRelatedByUserIdQuery($q));
 
 		if ($q !== null) {
 			return $result;
 		}
 
 		if ($this->getCacheResults()) {
-			$this->DevicesRelatedByUserId_c = $result;
-		}
-		return $result;
-	}
-
-	/**
-	 * Returns a Query for selecting quiz_session_attempt Objects(rows) from the quiz_session_attempt table
-	 * with a user_id that matches $this->id.
-	 * @return Query
-	 */
-	function getQuizSessionAttemptsRelatedByUserIdQuery(Query $q = null) {
-		return $this->getForeignObjectsQuery('quiz_session_attempt', 'user_id', 'id', $q);
-	}
-
-	/**
-	 * Returns the count of QuizSessionAttempt Objects(rows) from the quiz_session_attempt table
-	 * with a user_id that matches $this->id.
-	 * @return int
-	 */
-	function countQuizSessionAttemptsRelatedByUserId(Query $q = null) {
-		if (null === $this->getid()) {
-			return 0;
-		}
-		return QuizSessionAttempt::doCount($this->getQuizSessionAttemptsRelatedByUserIdQuery($q));
-	}
-
-	/**
-	 * Deletes the quiz_session_attempt Objects(rows) from the quiz_session_attempt table
-	 * with a user_id that matches $this->id.
-	 * @return int
-	 */
-	function deleteQuizSessionAttemptsRelatedByUserId(Query $q = null) {
-		if (null === $this->getid()) {
-			return 0;
-		}
-		$this->QuizSessionAttemptsRelatedByUserId_c = array();
-		return QuizSessionAttempt::doDelete($this->getQuizSessionAttemptsRelatedByUserIdQuery($q));
-	}
-
-	protected $QuizSessionAttemptsRelatedByUserId_c = array();
-
-	/**
-	 * Returns an array of QuizSessionAttempt objects with a user_id
-	 * that matches $this->id.
-	 * When first called, this method will cache the result.
-	 * After that, if $this->id is not modified, the
-	 * method will return the cached result instead of querying the database
-	 * a second time(for performance purposes).
-	 * @return QuizSessionAttempt[]
-	 */
-	function getQuizSessionAttemptsRelatedByUserId(Query $q = null) {
-		if (null === $this->getid()) {
-			return array();
-		}
-
-		if (
-			null === $q
-			&& $this->getCacheResults()
-			&& !empty($this->QuizSessionAttemptsRelatedByUserId_c)
-			&& !$this->isColumnModified('id')
-		) {
-			return $this->QuizSessionAttemptsRelatedByUserId_c;
-		}
-
-		$result = QuizSessionAttempt::doSelect($this->getQuizSessionAttemptsRelatedByUserIdQuery($q));
-
-		if ($q !== null) {
-			return $result;
-		}
-
-		if ($this->getCacheResults()) {
-			$this->QuizSessionAttemptsRelatedByUserId_c = $result;
+			$this->QuizSessionDevicesRelatedByUserId_c = $result;
 		}
 		return $result;
 	}
@@ -910,75 +952,39 @@ abstract class baseUser extends ApplicationModel {
 	}
 
 	/**
-	 * Convenience function for User::getDevicesRelatedByuser_id
-	 * @return Device[]
-	 * @see User::getDevicesRelatedByUserId
+	 * Convenience function for User::getQuizSessionDevicesRelatedByuser_id
+	 * @return QuizSessionDevice[]
+	 * @see User::getQuizSessionDevicesRelatedByUserId
 	 */
-	function getDevices($extra = null) {
-		return $this->getDevicesRelatedByUserId($extra);
+	function getQuizSessionDevices($extra = null) {
+		return $this->getQuizSessionDevicesRelatedByUserId($extra);
 	}
 
 	/**
-	  * Convenience function for User::getDevicesRelatedByuser_idQuery
+	  * Convenience function for User::getQuizSessionDevicesRelatedByuser_idQuery
 	  * @return Query
-	  * @see User::getDevicesRelatedByuser_idQuery
+	  * @see User::getQuizSessionDevicesRelatedByuser_idQuery
 	  */
-	function getDevicesQuery(Query $q = null) {
-		return $this->getForeignObjectsQuery('device', 'user_id','id', $q);
+	function getQuizSessionDevicesQuery(Query $q = null) {
+		return $this->getForeignObjectsQuery('quiz_session_device', 'user_id','id', $q);
 	}
 
 	/**
-	  * Convenience function for User::deleteDevicesRelatedByuser_id
+	  * Convenience function for User::deleteQuizSessionDevicesRelatedByuser_id
 	  * @return int
-	  * @see User::deleteDevicesRelatedByuser_id
+	  * @see User::deleteQuizSessionDevicesRelatedByuser_id
 	  */
-	function deleteDevices(Query $q = null) {
-		return $this->deleteDevicesRelatedByUserId($q);
+	function deleteQuizSessionDevices(Query $q = null) {
+		return $this->deleteQuizSessionDevicesRelatedByUserId($q);
 	}
 
 	/**
-	  * Convenience function for User::countDevicesRelatedByuser_id
+	  * Convenience function for User::countQuizSessionDevicesRelatedByuser_id
 	  * @return int
-	  * @see User::countDevicesRelatedByUserId
+	  * @see User::countQuizSessionDevicesRelatedByUserId
 	  */
-	function countDevices(Query $q = null) {
-		return $this->countDevicesRelatedByUserId($q);
-	}
-
-	/**
-	 * Convenience function for User::getQuizSessionAttemptsRelatedByuser_id
-	 * @return QuizSessionAttempt[]
-	 * @see User::getQuizSessionAttemptsRelatedByUserId
-	 */
-	function getQuizSessionAttempts($extra = null) {
-		return $this->getQuizSessionAttemptsRelatedByUserId($extra);
-	}
-
-	/**
-	  * Convenience function for User::getQuizSessionAttemptsRelatedByuser_idQuery
-	  * @return Query
-	  * @see User::getQuizSessionAttemptsRelatedByuser_idQuery
-	  */
-	function getQuizSessionAttemptsQuery(Query $q = null) {
-		return $this->getForeignObjectsQuery('quiz_session_attempt', 'user_id','id', $q);
-	}
-
-	/**
-	  * Convenience function for User::deleteQuizSessionAttemptsRelatedByuser_id
-	  * @return int
-	  * @see User::deleteQuizSessionAttemptsRelatedByuser_id
-	  */
-	function deleteQuizSessionAttempts(Query $q = null) {
-		return $this->deleteQuizSessionAttemptsRelatedByUserId($q);
-	}
-
-	/**
-	  * Convenience function for User::countQuizSessionAttemptsRelatedByuser_id
-	  * @return int
-	  * @see User::countQuizSessionAttemptsRelatedByUserId
-	  */
-	function countQuizSessionAttempts(Query $q = null) {
-		return $this->countQuizSessionAttemptsRelatedByUserId($q);
+	function countQuizSessionDevices(Query $q = null) {
+		return $this->countQuizSessionDevicesRelatedByUserId($q);
 	}
 
 	/**

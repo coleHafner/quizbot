@@ -1,11 +1,11 @@
 <h1>
-	<a href="<?php echo site_url('users/edit') ?>"
+	<a href="<?php echo site_url( $view_dir . '/edit') ?>"
 	   class="button"
 	   data-icon="plusthick"
-	   title="New User">
-		New User
+	   title="New <?= $user_type; ?>">
+		New <?= $user_type; ?>
 	</a>
-	Users
+	<?= $user_type . 's'; ?>
 </h1>
 
 <?php View::load('pager', compact('pager')) ?>

@@ -7,12 +7,13 @@
 			Edit	</a>
 	<?php endif; ?>
 
-	<?php if (App::can(Perm::ACTION_DELETE, $classroom)) : ?>
-		<a href="<?php echo site_url('classrooms/delete/' . $classroom->getId()) ?>"
-			class="button" data-icon="trash" title="Delete Classroom"
-			onclick="return confirm('Are you sure?');">
-			Delete	</a>
-	<?php endif; ?>
+	<?php
+	View::load('partials/delete-button', array(
+		'record' => $classroom,
+		'record_type' => 'Classroom',
+		'delete_path' => 'classrooms'
+	));
+	?>
 
 </div>
 <div class="ui-widget-content ui-corner-all ui-helper-clearfix">

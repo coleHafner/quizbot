@@ -36,8 +36,8 @@ CREATE TABLE `device`
 	`id` INTEGER(10) NOT NULL AUTO_INCREMENT,
 	`session_id` INTEGER(10) NOT NULL,
 	`classroom_id` INTEGER(10) NOT NULL,
-	`user_id` INTEGER(10),
 	`uuid` VARCHAR(255) NOT NULL,
+	`color` VARCHAR(255),
 	`nickname` VARCHAR(255),
 	`archived` INT(10),
 	`created` INT(10) NOT NULL,
@@ -45,11 +45,6 @@ CREATE TABLE `device`
 	PRIMARY KEY (`id`),
 	INDEX `created_by_user_id` (`session_id`(10)),
 	INDEX `classroom_id` (`classroom_id`(10)),
-	INDEX `user_id` (`user_id`(10)),
-	CONSTRAINT `device_ibfk_4`
-		FOREIGN KEY (`user_id`)
-		REFERENCES `user` (`id`)
-		ON UPDATE CASCADE,
 	CONSTRAINT `device_ibfk_2`
 		FOREIGN KEY (`classroom_id`)
 		REFERENCES `classroom` (`id`)
@@ -190,29 +185,60 @@ DROP TABLE IF EXISTS `quiz_session_attempt`;
 CREATE TABLE `quiz_session_attempt`
 (
 	`id` INTEGER(10) NOT NULL AUTO_INCREMENT,
+	`quiz_session_id` INTEGER(10) NOT NULL,
 	`quiz_session_question_id` INTEGER(10) NOT NULL,
-	`device_id` INTEGER(10) NOT NULL,
-	`user_id` INTEGER(10) NOT NULL,
+	`quiz_session_device_id` INTEGER(10) NOT NULL,
 	`answer_choice` INTEGER(10) NOT NULL,
 	`answer_text` VARCHAR(1080) NOT NULL,
+	`correct` TINYINT(1) NOT NULL,
 	`created` INT(10) NOT NULL,
 	PRIMARY KEY (`id`),
-	INDEX `created_by_user_id` (`device_id`(10)),
 	INDEX `classroom_id` (`answer_choice`(10)),
 	INDEX `quiz_session_question_id` (`quiz_session_question_id`(10)),
-	INDEX `user_id` (`user_id`(10)),
-	INDEX `user_id_2` (`user_id`(10)),
+	INDEX `quiz_session_device_id` (`quiz_session_device_id`(10)),
+	INDEX `quiz_session_id` (`quiz_session_id`(10)),
 	CONSTRAINT `quiz_session_attempt_ibfk_1`
 		FOREIGN KEY (`quiz_session_question_id`)
 		REFERENCES `quiz_session_question` (`id`)
 		ON UPDATE CASCADE,
 	CONSTRAINT `quiz_session_attempt_ibfk_2`
+		FOREIGN KEY (`quiz_session_device_id`)
+		REFERENCES `quiz_session_device` (`id`)
+		ON UPDATE CASCADE,
+	CONSTRAINT `quiz_session_attempt_ibfk_3`
+		FOREIGN KEY (`quiz_session_id`)
+		REFERENCES `quiz_session` (`id`)
+		ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- quiz_session_device
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `quiz_session_device`;
+
+CREATE TABLE `quiz_session_device`
+(
+	`id` INTEGER(10) NOT NULL AUTO_INCREMENT,
+	`quiz_session_id` INTEGER(10) NOT NULL,
+	`device_id` INTEGER(10) NOT NULL,
+	`user_id` INTEGER(10) NOT NULL,
+	`created` INT(10),
+	PRIMARY KEY (`id`),
+	INDEX `device_id` (`device_id`(10)),
+	INDEX `user_id` (`user_id`(10)),
+	INDEX `quiz_session_id` (`quiz_session_id`(10)),
+	CONSTRAINT `quiz_session_device_ibfk_1`
 		FOREIGN KEY (`device_id`)
 		REFERENCES `device` (`id`)
 		ON UPDATE CASCADE,
-	CONSTRAINT `quiz_session_attempt_ibfk_3`
+	CONSTRAINT `quiz_session_device_ibfk_2`
 		FOREIGN KEY (`user_id`)
 		REFERENCES `user` (`id`)
+		ON UPDATE CASCADE,
+	CONSTRAINT `quiz_session_device_ibfk_3`
+		FOREIGN KEY (`quiz_session_id`)
+		REFERENCES `quiz_session` (`id`)
 		ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
@@ -227,18 +253,19 @@ CREATE TABLE `quiz_session_question`
 	`id` INTEGER(10) NOT NULL AUTO_INCREMENT,
 	`quiz_session_id` INTEGER(10) NOT NULL,
 	`question_id` INTEGER(10) NOT NULL,
+	`question_text` VARCHAR(1080) NOT NULL,
 	`opened` INT(10) NOT NULL,
 	`closed` INT(10) NOT NULL,
 	PRIMARY KEY (`id`),
 	INDEX `quiz_id` (`question_id`(10)),
 	INDEX `quiz_session_id` (`quiz_session_id`(10)),
-	CONSTRAINT `quiz_session_question_ibfk_2`
-		FOREIGN KEY (`question_id`)
-		REFERENCES `question` (`id`)
-		ON UPDATE CASCADE,
 	CONSTRAINT `quiz_session_question_ibfk_1`
 		FOREIGN KEY (`quiz_session_id`)
 		REFERENCES `quiz_session` (`id`)
+		ON UPDATE CASCADE,
+	CONSTRAINT `quiz_session_question_ibfk_2`
+		FOREIGN KEY (`question_id`)
+		REFERENCES `question` (`id`)
 		ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
@@ -281,11 +308,13 @@ CREATE TABLE `user`
 (
 	`id` INTEGER(10) NOT NULL AUTO_INCREMENT,
 	`session_id` INTEGER(10) NOT NULL,
+	`first_name` VARCHAR(255),
+	`last_name` VARCHAR(255),
 	`email` VARCHAR(255) NOT NULL,
 	`password` VARCHAR(200) NOT NULL,
 	`salt` VARCHAR(200) NOT NULL,
 	`type` INTEGER NOT NULL,
-	`active` TINYINT(255) DEFAULT 1 NOT NULL,
+	`archived` INT(10),
 	`last_login` INT(10),
 	`created` INT(10) NOT NULL,
 	`updated` INT(10) NOT NULL,

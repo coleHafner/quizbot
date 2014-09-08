@@ -12,7 +12,7 @@ class User extends baseUser {
 	);
 
 	function __toString() {
-		return $this->getEmail() . '';
+		return $this->getFirstName() . ' ' . $this->getLastName();
 	}
 
 	function isAdmin() {
@@ -48,6 +48,19 @@ class User extends baseUser {
 
 		if ($object instanceof Classroom) {
 			$can = $this->hasClassroomPerm($object);
+
+		}else if ($object instanceof User) {
+			$can = $this->hasStudentPerm($object);
+
+		}else if ($object instanceof Quiz) {
+			$can = $this->hasQuizPerm($object);
+
+		}else if ($object instanceof Question) {
+			$can = $this->hasQuestionPerm($object);
+
+		}else if ($object instanceof Device) {
+			$can = $this->hasDevicePerm($object);
+
 		}else {
 			throw new RuntimeException('Error: Object of type ' . get_class($object) . ' is not recognized.');
 		}
@@ -61,19 +74,82 @@ class User extends baseUser {
 	 * @param	Classroom	$classroom		Classroom in question
 	 * @return	boolean
 	 */
-	function hasClassroomPermission(Classroom $classroom) {
+	function hasClassroomPerm(Classroom $classroom) {
 
 		if ($this->isAdmin()) {
 			return true;
 		}
 
 		//@TODO - create createdByUserId
-		if (($classroom->getCreatedByUserId() == $this->getId())
-			|| $this->teachesClassroom($classroom)) {
+		if ($this->teachesClassroom($classroom)) {
 			return true;
 		}
 
 		return false;
+	}
+
+	/**
+	 * Based on the account sent, check permissions to manage accounts.
+	 * @param	Quiz	$quiz
+	 * @return	boolean
+	 */
+	function hasQuizPerm(Quiz $quiz) {
+
+		if ($this->isAdmin()) {
+			return true;
+		}
+
+		return $this->hasClassroom($quiz->getClassroom());
+	}
+
+	/**
+	 * Based on the account sent, check permissions to manage accounts.
+	 * @param	Classroom	$classroom		Classroom in question
+	 * @return	boolean
+	 */
+	function hasStudentPerm(User $student) {
+
+		if ($this->isAdmin()) {
+			return true;
+		}
+
+		$classrooms = $student->getClassrooms();
+
+		foreach ($classrooms as $classroom) {
+			if ($this->teachesClassroom($classroom)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Based on the account sent, check permissions to manage accounts.
+	 * @param	Question	$question		Question
+	 * @return	boolean
+	 */
+	function hasQuestionPerm(Question $question) {
+
+		if ($this->isAdmin()) {
+			return true;
+		}
+
+		return $this->hasQuizPerm($question->getQuiz());
+	}
+
+	/**
+	 * Based on the account sent, check permissions to manage accounts.
+	 * @param	Device		$device		Device
+	 * @return	boolean
+	 */
+	function hasDevicePerm(Device $device) {
+
+		if ($this->isAdmin()) {
+			return true;
+		}
+
+		return $this->hasClassroomPerm($device->getClassroom());
 	}
 
 	/**
@@ -83,8 +159,7 @@ class User extends baseUser {
 	 */
 	function getClassrooms($role_id = null) {
 
-		$q = Query::create()
-			->add(Classroom::ARCHIVED, null);
+		$q = Query::create()->setTable(Classroom::getTableName());
 
 		if (!$this->isAdmin()) {
 			$role_id = empty($role_id) ? Role::TEACHER : $role_id;
@@ -92,6 +167,7 @@ class User extends baseUser {
 			$q->join(Classroom::ID, UserRole::CLASSROOM_ID)
 				->add(UserRole::USER_ID, $this->getId())
 				->add(UserRole::ROLE_ID, $role_id)
+				->add(Classroom::ARCHIVED, null)
 				->groupBy(UserRole::CLASSROOM_ID);
 		}
 
@@ -215,7 +291,7 @@ class User extends baseUser {
 
 	public function validate() {
 
-		if (filter_var($this->getEmail(), Filter_VALIDATE_EMAIL) === false) {
+		if (filter_var($this->getEmail(), FILTER_VALIDATE_EMAIL) === false) {
 			$this->_validationErrors[] = 'You must provide a valid email';
 		}
 
@@ -233,23 +309,15 @@ class User extends baseUser {
 			}
 		}
 
+		if (!$this->getFirstName()) {
+			$this->_validationErrors[] = 'You must provide a first name.';
+		}
+
+		if (!$this->getLastName()) {
+			$this->_validationErrors[] = 'You must provide a last	 name.';
+		}
+
 		return count($this->_validationErrors) == 0;
-	}
-
-	/**
-	 * @return	string
-	 */
-	public function getStatus() {
-		return $this->getActive() ? 'Active' : 'Deleted';
-	}
-
-	/**
-	 * @param	boolean		$override		defaults to false
-	 * @return	int
-	 */
-	public function delete($override = false) {
-		$this->setActive(false);
-		return $this->save();
 	}
 
 	static function getTypes() {

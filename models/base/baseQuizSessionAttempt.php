@@ -9,11 +9,12 @@
 abstract class baseQuizSessionAttempt extends ApplicationModel {
 
 	const ID = 'quiz_session_attempt.id';
+	const QUIZ_SESSION_ID = 'quiz_session_attempt.quiz_session_id';
 	const QUIZ_SESSION_QUESTION_ID = 'quiz_session_attempt.quiz_session_question_id';
-	const DEVICE_ID = 'quiz_session_attempt.device_id';
-	const USER_ID = 'quiz_session_attempt.user_id';
+	const QUIZ_SESSION_DEVICE_ID = 'quiz_session_attempt.quiz_session_device_id';
 	const ANSWER_CHOICE = 'quiz_session_attempt.answer_choice';
 	const ANSWER_TEXT = 'quiz_session_attempt.answer_text';
+	const CORRECT = 'quiz_session_attempt.correct';
 	const CREATED = 'quiz_session_attempt.created';
 
 	/**
@@ -68,11 +69,12 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	 */
 	protected static $_columns = array(
 		QuizSessionAttempt::ID,
+		QuizSessionAttempt::QUIZ_SESSION_ID,
 		QuizSessionAttempt::QUIZ_SESSION_QUESTION_ID,
-		QuizSessionAttempt::DEVICE_ID,
-		QuizSessionAttempt::USER_ID,
+		QuizSessionAttempt::QUIZ_SESSION_DEVICE_ID,
 		QuizSessionAttempt::ANSWER_CHOICE,
 		QuizSessionAttempt::ANSWER_TEXT,
+		QuizSessionAttempt::CORRECT,
 		QuizSessionAttempt::CREATED,
 	);
 
@@ -82,11 +84,12 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	 */
 	protected static $_columnNames = array(
 		'id',
+		'quiz_session_id',
 		'quiz_session_question_id',
-		'device_id',
-		'user_id',
+		'quiz_session_device_id',
 		'answer_choice',
 		'answer_text',
+		'correct',
 		'created',
 	);
 
@@ -96,11 +99,12 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	 */
 	protected static $_columnTypes = array(
 		'id' => Model::COLUMN_TYPE_INTEGER,
+		'quiz_session_id' => Model::COLUMN_TYPE_INTEGER,
 		'quiz_session_question_id' => Model::COLUMN_TYPE_INTEGER,
-		'device_id' => Model::COLUMN_TYPE_INTEGER,
-		'user_id' => Model::COLUMN_TYPE_INTEGER,
+		'quiz_session_device_id' => Model::COLUMN_TYPE_INTEGER,
 		'answer_choice' => Model::COLUMN_TYPE_INTEGER,
 		'answer_text' => Model::COLUMN_TYPE_VARCHAR,
+		'correct' => Model::COLUMN_TYPE_TINYINT,
 		'created' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
 	);
 
@@ -111,22 +115,22 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	protected $id;
 
 	/**
+	 * `quiz_session_id` INTEGER NOT NULL DEFAULT ''
+	 * @var int
+	 */
+	protected $quiz_session_id;
+
+	/**
 	 * `quiz_session_question_id` INTEGER NOT NULL DEFAULT ''
 	 * @var int
 	 */
 	protected $quiz_session_question_id;
 
 	/**
-	 * `device_id` INTEGER NOT NULL DEFAULT ''
+	 * `quiz_session_device_id` INTEGER NOT NULL DEFAULT ''
 	 * @var int
 	 */
-	protected $device_id;
-
-	/**
-	 * `user_id` INTEGER NOT NULL DEFAULT ''
-	 * @var int
-	 */
-	protected $user_id;
+	protected $quiz_session_device_id;
 
 	/**
 	 * `answer_choice` INTEGER NOT NULL DEFAULT ''
@@ -139,6 +143,12 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	 * @var string
 	 */
 	protected $answer_text;
+
+	/**
+	 * `correct` TINYINT NOT NULL DEFAULT ''
+	 * @var int
+	 */
+	protected $correct;
 
 	/**
 	 * `created` INTEGER_TIMESTAMP NOT NULL DEFAULT ''
@@ -159,6 +169,42 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	 */
 	function setId($value) {
 		return $this->setColumnValue('id', $value, Model::COLUMN_TYPE_INTEGER);
+	}
+
+	/**
+	 * Gets the value of the quiz_session_id field
+	 */
+	function getQuizSessionId() {
+		return $this->quiz_session_id;
+	}
+
+	/**
+	 * Sets the value of the quiz_session_id field
+	 * @return QuizSessionAttempt
+	 */
+	function setQuizSessionId($value) {
+		return $this->setColumnValue('quiz_session_id', $value, Model::COLUMN_TYPE_INTEGER);
+	}
+
+	/**
+	 * Convenience function for QuizSessionAttempt::getQuizSessionId
+	 * final because getQuizSessionId should be extended instead
+	 * to ensure consistent behavior
+	 * @see QuizSessionAttempt::getQuizSessionId
+	 */
+	final function getQuiz_session_id() {
+		return $this->getQuizSessionId();
+	}
+
+	/**
+	 * Convenience function for QuizSessionAttempt::setQuizSessionId
+	 * final because setQuizSessionId should be extended instead
+	 * to ensure consistent behavior
+	 * @see QuizSessionAttempt::setQuizSessionId
+	 * @return QuizSessionAttempt
+	 */
+	final function setQuiz_session_id($value) {
+		return $this->setQuizSessionId($value);
 	}
 
 	/**
@@ -198,75 +244,39 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	}
 
 	/**
-	 * Gets the value of the device_id field
+	 * Gets the value of the quiz_session_device_id field
 	 */
-	function getDeviceId() {
-		return $this->device_id;
+	function getQuizSessionDeviceId() {
+		return $this->quiz_session_device_id;
 	}
 
 	/**
-	 * Sets the value of the device_id field
+	 * Sets the value of the quiz_session_device_id field
 	 * @return QuizSessionAttempt
 	 */
-	function setDeviceId($value) {
-		return $this->setColumnValue('device_id', $value, Model::COLUMN_TYPE_INTEGER);
+	function setQuizSessionDeviceId($value) {
+		return $this->setColumnValue('quiz_session_device_id', $value, Model::COLUMN_TYPE_INTEGER);
 	}
 
 	/**
-	 * Convenience function for QuizSessionAttempt::getDeviceId
-	 * final because getDeviceId should be extended instead
+	 * Convenience function for QuizSessionAttempt::getQuizSessionDeviceId
+	 * final because getQuizSessionDeviceId should be extended instead
 	 * to ensure consistent behavior
-	 * @see QuizSessionAttempt::getDeviceId
+	 * @see QuizSessionAttempt::getQuizSessionDeviceId
 	 */
-	final function getDevice_id() {
-		return $this->getDeviceId();
+	final function getQuiz_session_device_id() {
+		return $this->getQuizSessionDeviceId();
 	}
 
 	/**
-	 * Convenience function for QuizSessionAttempt::setDeviceId
-	 * final because setDeviceId should be extended instead
+	 * Convenience function for QuizSessionAttempt::setQuizSessionDeviceId
+	 * final because setQuizSessionDeviceId should be extended instead
 	 * to ensure consistent behavior
-	 * @see QuizSessionAttempt::setDeviceId
+	 * @see QuizSessionAttempt::setQuizSessionDeviceId
 	 * @return QuizSessionAttempt
 	 */
-	final function setDevice_id($value) {
-		return $this->setDeviceId($value);
-	}
-
-	/**
-	 * Gets the value of the user_id field
-	 */
-	function getUserId() {
-		return $this->user_id;
-	}
-
-	/**
-	 * Sets the value of the user_id field
-	 * @return QuizSessionAttempt
-	 */
-	function setUserId($value) {
-		return $this->setColumnValue('user_id', $value, Model::COLUMN_TYPE_INTEGER);
-	}
-
-	/**
-	 * Convenience function for QuizSessionAttempt::getUserId
-	 * final because getUserId should be extended instead
-	 * to ensure consistent behavior
-	 * @see QuizSessionAttempt::getUserId
-	 */
-	final function getUser_id() {
-		return $this->getUserId();
-	}
-
-	/**
-	 * Convenience function for QuizSessionAttempt::setUserId
-	 * final because setUserId should be extended instead
-	 * to ensure consistent behavior
-	 * @see QuizSessionAttempt::setUserId
-	 * @return QuizSessionAttempt
-	 */
-	final function setUser_id($value) {
-		return $this->setUserId($value);
+	final function setQuiz_session_device_id($value) {
+		return $this->setQuizSessionDeviceId($value);
 	}
 
 	/**
@@ -342,6 +352,21 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	}
 
 	/**
+	 * Gets the value of the correct field
+	 */
+	function getCorrect() {
+		return $this->correct;
+	}
+
+	/**
+	 * Sets the value of the correct field
+	 * @return QuizSessionAttempt
+	 */
+	function setCorrect($value) {
+		return $this->setColumnValue('correct', $value, Model::COLUMN_TYPE_TINYINT);
+	}
+
+	/**
 	 * Gets the value of the created field
 	 */
 	function getCreated($format = 'Y-m-d H:i:s') {
@@ -405,6 +430,15 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	}
 
 	/**
+	 * Searches the database for a row with a quiz_session_id
+	 * value that matches the one provided
+	 * @return QuizSessionAttempt
+	 */
+	static function retrieveByQuizSessionId($value) {
+		return static::retrieveByColumn('quiz_session_id', $value);
+	}
+
+	/**
 	 * Searches the database for a row with a quiz_session_question_id
 	 * value that matches the one provided
 	 * @return QuizSessionAttempt
@@ -414,21 +448,12 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	}
 
 	/**
-	 * Searches the database for a row with a device_id
+	 * Searches the database for a row with a quiz_session_device_id
 	 * value that matches the one provided
 	 * @return QuizSessionAttempt
 	 */
-	static function retrieveByDeviceId($value) {
-		return static::retrieveByColumn('device_id', $value);
-	}
-
-	/**
-	 * Searches the database for a row with a user_id
-	 * value that matches the one provided
-	 * @return QuizSessionAttempt
-	 */
-	static function retrieveByUserId($value) {
-		return static::retrieveByColumn('user_id', $value);
+	static function retrieveByQuizSessionDeviceId($value) {
+		return static::retrieveByColumn('quiz_session_device_id', $value);
 	}
 
 	/**
@@ -450,6 +475,15 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	}
 
 	/**
+	 * Searches the database for a row with a correct
+	 * value that matches the one provided
+	 * @return QuizSessionAttempt
+	 */
+	static function retrieveByCorrect($value) {
+		return static::retrieveByColumn('correct', $value);
+	}
+
+	/**
 	 * Searches the database for a row with a created
 	 * value that matches the one provided
 	 * @return QuizSessionAttempt
@@ -465,10 +499,11 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	 */
 	function castInts() {
 		$this->id = (null === $this->id) ? null : (int) $this->id;
+		$this->quiz_session_id = (null === $this->quiz_session_id) ? null : (int) $this->quiz_session_id;
 		$this->quiz_session_question_id = (null === $this->quiz_session_question_id) ? null : (int) $this->quiz_session_question_id;
-		$this->device_id = (null === $this->device_id) ? null : (int) $this->device_id;
-		$this->user_id = (null === $this->user_id) ? null : (int) $this->user_id;
+		$this->quiz_session_device_id = (null === $this->quiz_session_device_id) ? null : (int) $this->quiz_session_device_id;
 		$this->answer_choice = (null === $this->answer_choice) ? null : (int) $this->answer_choice;
+		$this->correct = (null === $this->correct) ? null : (int) $this->correct;
 		$this->created = (null === $this->created) ? null : (int) $this->created;
 		return $this;
 	}
@@ -552,55 +587,55 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	/**
 	 * @return QuizSessionAttempt
 	 */
-	function setDevice(Device $device = null) {
-		return $this->setDeviceRelatedByDeviceId($device);
+	function setQuizSessionDevice(QuizSessionDevice $quizsessiondevice = null) {
+		return $this->setQuizSessionDeviceRelatedByQuizSessionDeviceId($quizsessiondevice);
 	}
 
 	/**
 	 * @return QuizSessionAttempt
 	 */
-	function setDeviceRelatedByDeviceId(Device $device = null) {
-		if (null === $device) {
-			$this->setdevice_id(null);
+	function setQuizSessionDeviceRelatedByQuizSessionDeviceId(QuizSessionDevice $quizsessiondevice = null) {
+		if (null === $quizsessiondevice) {
+			$this->setquiz_session_device_id(null);
 		} else {
-			if (!$device->getid()) {
-				throw new Exception('Cannot connect a Device without a id');
+			if (!$quizsessiondevice->getid()) {
+				throw new Exception('Cannot connect a QuizSessionDevice without a id');
 			}
-			$this->setdevice_id($device->getid());
+			$this->setquiz_session_device_id($quizsessiondevice->getid());
 		}
 		return $this;
 	}
 
 	/**
-	 * Returns a device object with a id
-	 * that matches $this->device_id.
-	 * @return Device
+	 * Returns a quiz_session_device object with a id
+	 * that matches $this->quiz_session_device_id.
+	 * @return QuizSessionDevice
 	 */
-	function getDevice() {
-		return $this->getDeviceRelatedByDeviceId();
+	function getQuizSessionDevice() {
+		return $this->getQuizSessionDeviceRelatedByQuizSessionDeviceId();
 	}
 
 	/**
-	 * Returns a device object with a id
-	 * that matches $this->device_id.
-	 * @return Device
+	 * Returns a quiz_session_device object with a id
+	 * that matches $this->quiz_session_device_id.
+	 * @return QuizSessionDevice
 	 */
-	function getDeviceRelatedByDeviceId() {
-		$fk_value = $this->getdevice_id();
+	function getQuizSessionDeviceRelatedByQuizSessionDeviceId() {
+		$fk_value = $this->getquiz_session_device_id();
 		if (null === $fk_value) {
 			return null;
 		}
-		return Device::retrieveByPK($fk_value);
+		return QuizSessionDevice::retrieveByPK($fk_value);
 	}
 
-	static function doSelectJoinDevice(Query $q = null, $join_type = Query::LEFT_JOIN) {
-		return static::doSelectJoinDeviceRelatedByDeviceId($q, $join_type);
+	static function doSelectJoinQuizSessionDevice(Query $q = null, $join_type = Query::LEFT_JOIN) {
+		return static::doSelectJoinQuizSessionDeviceRelatedByQuizSessionDeviceId($q, $join_type);
 	}
 
 	/**
 	 * @return QuizSessionAttempt[]
 	 */
-	static function doSelectJoinDeviceRelatedByDeviceId(Query $q = null, $join_type = Query::LEFT_JOIN) {
+	static function doSelectJoinQuizSessionDeviceRelatedByQuizSessionDeviceId(Query $q = null, $join_type = Query::LEFT_JOIN) {
 		$q = $q ? clone $q : new Query;
 		$columns = $q->getColumns();
 		$alias = $q->getAlias();
@@ -615,68 +650,68 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 			}
 		}
 
-		$to_table = Device::getTableName();
-		$q->join($to_table, $this_table . '.device_id = ' . $to_table . '.id', $join_type);
-		foreach (Device::getColumns() as $column) {
+		$to_table = QuizSessionDevice::getTableName();
+		$q->join($to_table, $this_table . '.quiz_session_device_id = ' . $to_table . '.id', $join_type);
+		foreach (QuizSessionDevice::getColumns() as $column) {
 			$columns[] = $column;
 		}
 		$q->setColumns($columns);
 
-		return static::doSelect($q, array('Device'));
+		return static::doSelect($q, array('QuizSessionDevice'));
 	}
 
 	/**
 	 * @return QuizSessionAttempt
 	 */
-	function setUser(User $user = null) {
-		return $this->setUserRelatedByUserId($user);
+	function setQuizSession(QuizSession $quizsession = null) {
+		return $this->setQuizSessionRelatedByQuizSessionId($quizsession);
 	}
 
 	/**
 	 * @return QuizSessionAttempt
 	 */
-	function setUserRelatedByUserId(User $user = null) {
-		if (null === $user) {
-			$this->setuser_id(null);
+	function setQuizSessionRelatedByQuizSessionId(QuizSession $quizsession = null) {
+		if (null === $quizsession) {
+			$this->setquiz_session_id(null);
 		} else {
-			if (!$user->getid()) {
-				throw new Exception('Cannot connect a User without a id');
+			if (!$quizsession->getid()) {
+				throw new Exception('Cannot connect a QuizSession without a id');
 			}
-			$this->setuser_id($user->getid());
+			$this->setquiz_session_id($quizsession->getid());
 		}
 		return $this;
 	}
 
 	/**
-	 * Returns a user object with a id
-	 * that matches $this->user_id.
-	 * @return User
+	 * Returns a quiz_session object with a id
+	 * that matches $this->quiz_session_id.
+	 * @return QuizSession
 	 */
-	function getUser() {
-		return $this->getUserRelatedByUserId();
+	function getQuizSession() {
+		return $this->getQuizSessionRelatedByQuizSessionId();
 	}
 
 	/**
-	 * Returns a user object with a id
-	 * that matches $this->user_id.
-	 * @return User
+	 * Returns a quiz_session object with a id
+	 * that matches $this->quiz_session_id.
+	 * @return QuizSession
 	 */
-	function getUserRelatedByUserId() {
-		$fk_value = $this->getuser_id();
+	function getQuizSessionRelatedByQuizSessionId() {
+		$fk_value = $this->getquiz_session_id();
 		if (null === $fk_value) {
 			return null;
 		}
-		return User::retrieveByPK($fk_value);
+		return QuizSession::retrieveByPK($fk_value);
 	}
 
-	static function doSelectJoinUser(Query $q = null, $join_type = Query::LEFT_JOIN) {
-		return static::doSelectJoinUserRelatedByUserId($q, $join_type);
+	static function doSelectJoinQuizSession(Query $q = null, $join_type = Query::LEFT_JOIN) {
+		return static::doSelectJoinQuizSessionRelatedByQuizSessionId($q, $join_type);
 	}
 
 	/**
 	 * @return QuizSessionAttempt[]
 	 */
-	static function doSelectJoinUserRelatedByUserId(Query $q = null, $join_type = Query::LEFT_JOIN) {
+	static function doSelectJoinQuizSessionRelatedByQuizSessionId(Query $q = null, $join_type = Query::LEFT_JOIN) {
 		$q = $q ? clone $q : new Query;
 		$columns = $q->getColumns();
 		$alias = $q->getAlias();
@@ -691,14 +726,14 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 			}
 		}
 
-		$to_table = User::getTableName();
-		$q->join($to_table, $this_table . '.user_id = ' . $to_table . '.id', $join_type);
-		foreach (User::getColumns() as $column) {
+		$to_table = QuizSession::getTableName();
+		$q->join($to_table, $this_table . '.quiz_session_id = ' . $to_table . '.id', $join_type);
+		foreach (QuizSession::getColumns() as $column) {
 			$columns[] = $column;
 		}
 		$q->setColumns($columns);
 
-		return static::doSelect($q, array('User'));
+		return static::doSelect($q, array('QuizSession'));
 	}
 
 	/**
@@ -727,19 +762,19 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 		}
 		$classes[] = 'QuizSessionQuestion';
 	
-		$to_table = Device::getTableName();
-		$q->join($to_table, $this_table . '.device_id = ' . $to_table . '.id', $join_type);
-		foreach (Device::getColumns() as $column) {
+		$to_table = QuizSessionDevice::getTableName();
+		$q->join($to_table, $this_table . '.quiz_session_device_id = ' . $to_table . '.id', $join_type);
+		foreach (QuizSessionDevice::getColumns() as $column) {
 			$columns[] = $column;
 		}
-		$classes[] = 'Device';
+		$classes[] = 'QuizSessionDevice';
 	
-		$to_table = User::getTableName();
-		$q->join($to_table, $this_table . '.user_id = ' . $to_table . '.id', $join_type);
-		foreach (User::getColumns() as $column) {
+		$to_table = QuizSession::getTableName();
+		$q->join($to_table, $this_table . '.quiz_session_id = ' . $to_table . '.id', $join_type);
+		foreach (QuizSession::getColumns() as $column) {
 			$columns[] = $column;
 		}
-		$classes[] = 'User';
+		$classes[] = 'QuizSession';
 	
 		$q->setColumns($columns);
 		return static::doSelect($q, $classes);
@@ -751,20 +786,23 @@ abstract class baseQuizSessionAttempt extends ApplicationModel {
 	 */
 	function validate() {
 		$this->_validationErrors = array();
+		if (null === $this->getquiz_session_id()) {
+			$this->_validationErrors[] = 'quiz_session_id must not be null';
+		}
 		if (null === $this->getquiz_session_question_id()) {
 			$this->_validationErrors[] = 'quiz_session_question_id must not be null';
 		}
-		if (null === $this->getdevice_id()) {
-			$this->_validationErrors[] = 'device_id must not be null';
-		}
-		if (null === $this->getuser_id()) {
-			$this->_validationErrors[] = 'user_id must not be null';
+		if (null === $this->getquiz_session_device_id()) {
+			$this->_validationErrors[] = 'quiz_session_device_id must not be null';
 		}
 		if (null === $this->getanswer_choice()) {
 			$this->_validationErrors[] = 'answer_choice must not be null';
 		}
 		if (null === $this->getanswer_text()) {
 			$this->_validationErrors[] = 'answer_text must not be null';
+		}
+		if (null === $this->getcorrect()) {
+			$this->_validationErrors[] = 'correct must not be null';
 		}
 		return 0 === count($this->_validationErrors);
 	}

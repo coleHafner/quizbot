@@ -11,6 +11,7 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 	const ID = 'quiz_session_question.id';
 	const QUIZ_SESSION_ID = 'quiz_session_question.quiz_session_id';
 	const QUESTION_ID = 'quiz_session_question.question_id';
+	const QUESTION_TEXT = 'quiz_session_question.question_text';
 	const OPENED = 'quiz_session_question.opened';
 	const CLOSED = 'quiz_session_question.closed';
 
@@ -68,6 +69,7 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 		QuizSessionQuestion::ID,
 		QuizSessionQuestion::QUIZ_SESSION_ID,
 		QuizSessionQuestion::QUESTION_ID,
+		QuizSessionQuestion::QUESTION_TEXT,
 		QuizSessionQuestion::OPENED,
 		QuizSessionQuestion::CLOSED,
 	);
@@ -80,6 +82,7 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 		'id',
 		'quiz_session_id',
 		'question_id',
+		'question_text',
 		'opened',
 		'closed',
 	);
@@ -92,6 +95,7 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 		'id' => Model::COLUMN_TYPE_INTEGER,
 		'quiz_session_id' => Model::COLUMN_TYPE_INTEGER,
 		'question_id' => Model::COLUMN_TYPE_INTEGER,
+		'question_text' => Model::COLUMN_TYPE_VARCHAR,
 		'opened' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
 		'closed' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
 	);
@@ -113,6 +117,12 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 	 * @var int
 	 */
 	protected $question_id;
+
+	/**
+	 * `question_text` VARCHAR NOT NULL
+	 * @var string
+	 */
+	protected $question_text;
 
 	/**
 	 * `opened` INTEGER_TIMESTAMP NOT NULL DEFAULT ''
@@ -211,6 +221,42 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 	 */
 	final function setQuestion_id($value) {
 		return $this->setQuestionId($value);
+	}
+
+	/**
+	 * Gets the value of the question_text field
+	 */
+	function getQuestionText() {
+		return $this->question_text;
+	}
+
+	/**
+	 * Sets the value of the question_text field
+	 * @return QuizSessionQuestion
+	 */
+	function setQuestionText($value) {
+		return $this->setColumnValue('question_text', $value, Model::COLUMN_TYPE_VARCHAR);
+	}
+
+	/**
+	 * Convenience function for QuizSessionQuestion::getQuestionText
+	 * final because getQuestionText should be extended instead
+	 * to ensure consistent behavior
+	 * @see QuizSessionQuestion::getQuestionText
+	 */
+	final function getQuestion_text() {
+		return $this->getQuestionText();
+	}
+
+	/**
+	 * Convenience function for QuizSessionQuestion::setQuestionText
+	 * final because setQuestionText should be extended instead
+	 * to ensure consistent behavior
+	 * @see QuizSessionQuestion::setQuestionText
+	 * @return QuizSessionQuestion
+	 */
+	final function setQuestion_text($value) {
+		return $this->setQuestionText($value);
 	}
 
 	/**
@@ -313,6 +359,15 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 	}
 
 	/**
+	 * Searches the database for a row with a question_text
+	 * value that matches the one provided
+	 * @return QuizSessionQuestion
+	 */
+	static function retrieveByQuestionText($value) {
+		return static::retrieveByColumn('question_text', $value);
+	}
+
+	/**
 	 * Searches the database for a row with a opened
 	 * value that matches the one provided
 	 * @return QuizSessionQuestion
@@ -342,82 +397,6 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 		$this->opened = (null === $this->opened) ? null : (int) $this->opened;
 		$this->closed = (null === $this->closed) ? null : (int) $this->closed;
 		return $this;
-	}
-
-	/**
-	 * @return QuizSessionQuestion
-	 */
-	function setQuestion(Question $question = null) {
-		return $this->setQuestionRelatedByQuestionId($question);
-	}
-
-	/**
-	 * @return QuizSessionQuestion
-	 */
-	function setQuestionRelatedByQuestionId(Question $question = null) {
-		if (null === $question) {
-			$this->setquestion_id(null);
-		} else {
-			if (!$question->getid()) {
-				throw new Exception('Cannot connect a Question without a id');
-			}
-			$this->setquestion_id($question->getid());
-		}
-		return $this;
-	}
-
-	/**
-	 * Returns a question object with a id
-	 * that matches $this->question_id.
-	 * @return Question
-	 */
-	function getQuestion() {
-		return $this->getQuestionRelatedByQuestionId();
-	}
-
-	/**
-	 * Returns a question object with a id
-	 * that matches $this->question_id.
-	 * @return Question
-	 */
-	function getQuestionRelatedByQuestionId() {
-		$fk_value = $this->getquestion_id();
-		if (null === $fk_value) {
-			return null;
-		}
-		return Question::retrieveByPK($fk_value);
-	}
-
-	static function doSelectJoinQuestion(Query $q = null, $join_type = Query::LEFT_JOIN) {
-		return static::doSelectJoinQuestionRelatedByQuestionId($q, $join_type);
-	}
-
-	/**
-	 * @return QuizSessionQuestion[]
-	 */
-	static function doSelectJoinQuestionRelatedByQuestionId(Query $q = null, $join_type = Query::LEFT_JOIN) {
-		$q = $q ? clone $q : new Query;
-		$columns = $q->getColumns();
-		$alias = $q->getAlias();
-		$this_table = $alias ? $alias : static::getTableName();
-		if (!$columns) {
-			if ($alias) {
-				foreach (static::getColumns() as $column_name) {
-					$columns[] = $alias . '.' . $column_name;
-				}
-			} else {
-				$columns = static::getColumns();
-			}
-		}
-
-		$to_table = Question::getTableName();
-		$q->join($to_table, $this_table . '.question_id = ' . $to_table . '.id', $join_type);
-		foreach (Question::getColumns() as $column) {
-			$columns[] = $column;
-		}
-		$q->setColumns($columns);
-
-		return static::doSelect($q, array('Question'));
 	}
 
 	/**
@@ -497,6 +476,82 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 	}
 
 	/**
+	 * @return QuizSessionQuestion
+	 */
+	function setQuestion(Question $question = null) {
+		return $this->setQuestionRelatedByQuestionId($question);
+	}
+
+	/**
+	 * @return QuizSessionQuestion
+	 */
+	function setQuestionRelatedByQuestionId(Question $question = null) {
+		if (null === $question) {
+			$this->setquestion_id(null);
+		} else {
+			if (!$question->getid()) {
+				throw new Exception('Cannot connect a Question without a id');
+			}
+			$this->setquestion_id($question->getid());
+		}
+		return $this;
+	}
+
+	/**
+	 * Returns a question object with a id
+	 * that matches $this->question_id.
+	 * @return Question
+	 */
+	function getQuestion() {
+		return $this->getQuestionRelatedByQuestionId();
+	}
+
+	/**
+	 * Returns a question object with a id
+	 * that matches $this->question_id.
+	 * @return Question
+	 */
+	function getQuestionRelatedByQuestionId() {
+		$fk_value = $this->getquestion_id();
+		if (null === $fk_value) {
+			return null;
+		}
+		return Question::retrieveByPK($fk_value);
+	}
+
+	static function doSelectJoinQuestion(Query $q = null, $join_type = Query::LEFT_JOIN) {
+		return static::doSelectJoinQuestionRelatedByQuestionId($q, $join_type);
+	}
+
+	/**
+	 * @return QuizSessionQuestion[]
+	 */
+	static function doSelectJoinQuestionRelatedByQuestionId(Query $q = null, $join_type = Query::LEFT_JOIN) {
+		$q = $q ? clone $q : new Query;
+		$columns = $q->getColumns();
+		$alias = $q->getAlias();
+		$this_table = $alias ? $alias : static::getTableName();
+		if (!$columns) {
+			if ($alias) {
+				foreach (static::getColumns() as $column_name) {
+					$columns[] = $alias . '.' . $column_name;
+				}
+			} else {
+				$columns = static::getColumns();
+			}
+		}
+
+		$to_table = Question::getTableName();
+		$q->join($to_table, $this_table . '.question_id = ' . $to_table . '.id', $join_type);
+		foreach (Question::getColumns() as $column) {
+			$columns[] = $column;
+		}
+		$q->setColumns($columns);
+
+		return static::doSelect($q, array('Question'));
+	}
+
+	/**
 	 * @return QuizSessionQuestion[]
 	 */
 	static function doSelectJoinAll(Query $q = null, $join_type = Query::LEFT_JOIN) {
@@ -515,19 +570,19 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 			}
 		}
 
-		$to_table = Question::getTableName();
-		$q->join($to_table, $this_table . '.question_id = ' . $to_table . '.id', $join_type);
-		foreach (Question::getColumns() as $column) {
-			$columns[] = $column;
-		}
-		$classes[] = 'Question';
-	
 		$to_table = QuizSession::getTableName();
 		$q->join($to_table, $this_table . '.quiz_session_id = ' . $to_table . '.id', $join_type);
 		foreach (QuizSession::getColumns() as $column) {
 			$columns[] = $column;
 		}
 		$classes[] = 'QuizSession';
+	
+		$to_table = Question::getTableName();
+		$q->join($to_table, $this_table . '.question_id = ' . $to_table . '.id', $join_type);
+		foreach (Question::getColumns() as $column) {
+			$columns[] = $column;
+		}
+		$classes[] = 'Question';
 	
 		$q->setColumns($columns);
 		return static::doSelect($q, $classes);
@@ -651,6 +706,9 @@ abstract class baseQuizSessionQuestion extends ApplicationModel {
 		}
 		if (null === $this->getquestion_id()) {
 			$this->_validationErrors[] = 'question_id must not be null';
+		}
+		if (null === $this->getquestion_text()) {
+			$this->_validationErrors[] = 'question_text must not be null';
 		}
 		if (null === $this->getopened()) {
 			$this->_validationErrors[] = 'opened must not be null';

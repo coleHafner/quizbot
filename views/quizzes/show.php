@@ -7,12 +7,13 @@
 			Edit	</a>
 	<?php endif; ?>
 
-	<?php if (App::can(Perm::ACTION_DELETE, $quiz)) : ?>
-		<a href="<?php echo site_url('quizzes/delete/' . $quiz->getId()) ?>"
-			class="button" data-icon="trash" title="Delete Quiz"
-			onclick="return confirm('Are you sure?');">
-			Delete	</a>
-	<?php endif; ?>
+	<?php
+	View::load('partials/delete-button', array(
+		'record' => $quiz,
+		'record_type' => 'Quiz',
+		'delete_path' => 'quizzes'
+	));
+	?>
 
 	<?php if (App::can(Perm::ACTION_EDIT, $quiz)) : ?>
 		<a href="<?php echo site_url('questions?quiz_id=' . $quiz->getId()) ?>"

@@ -5,7 +5,7 @@
 	   title="New Device">
 		New Device
 	</a>
-	Devices
+	Clickers
 </h1>
 
 <?php View::load('pager', compact('pager')) ?>

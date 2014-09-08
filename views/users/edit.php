@@ -49,9 +49,9 @@ $(function() {
 });
 </script>
 
-<h1><?php echo $user->isNew() ? "New" : "Edit" ?> User</h1>
+<h1><?php echo $user->isNew() ? "New" : "Edit" ?> <?= $user_type; ?></h1>
 
-<form method="post" action="<?php echo site_url('users/save') ?>">
+<form method="post" action="<?php echo site_url( $view_dir . '/save') ?>">
 	<div class="ui-widget-content ui-corner-all ui-helper-clearfix">
 
 		<input type="hidden" name="id" value="<?php echo h($user->getId()) ?>" />
@@ -59,6 +59,16 @@ $(function() {
 		<div class="form-field-wrapper">
 			<label class="form-field-label" for="user_email">Email</label>
 			<input id="user_email" type="text" name="email" value="<?php echo h($user->getEmail()) ?>" />
+		</div>
+
+		<div class="form-field-wrapper">
+			<label class="form-field-label" for="user_fname">First Name</label>
+			<input id="user_fname" type="text" name="first_name" value="<?php echo h($user->getFirstName()) ?>" />
+		</div>
+
+		<div class="form-field-wrapper">
+			<label class="form-field-label" for="user_lname">Last Name</label>
+			<input id="user_lname" type="text" name="last_name" value="<?php echo h($user->getLastName()) ?>" />
 		</div>
 
 		<div class="form-field-wrapper">
@@ -70,17 +80,19 @@ $(function() {
 			<input id="user_password2" type="password" name="password2" value="" />
 		</div>
 
-		<div class="form-field-wrapper">
-			<label class="form-field-label" for="user_type">Type</label>
-			<select id="user_type" name="type">
-				<option value="">Select Type</option>
-				<?php foreach (User::getTypes() as $id => $name) : ?>
-					<option value="<?= $id; ?>" <?= $user->getType() == $id ? 'selected' : ''; ?>>
-						<?= $name; ?>
-					</option>
-				<?php endforeach; ?>
-			</select>
-		</div>
+		<?php if (App::hasPerm(Perm::USER_EDIT_TYPE)) : ?>
+			<div class="form-field-wrapper">
+				<label class="form-field-label" for="user_type">Type</label>
+				<select id="user_type" name="type">
+					<option value="">Select Type</option>
+					<?php foreach (User::getTypes() as $id => $name) : ?>
+						<option value="<?= $id; ?>" <?= $user->getType() == $id ? 'selected' : ''; ?>>
+							<?= $name; ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+		<?php endif; ?>
 
 		<?php if (App::hasPerm(Perm::USER_EDIT_ROLE) && App::can(Perm::ACTION_EDIT, $user)) : ?>
 			<div class="form-field-wrapper">

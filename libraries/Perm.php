@@ -11,6 +11,8 @@ class Perm {
 
 	const DEVICE_CREATE = 5;
 	const DEVICE_EDIT = 6;
+	const DEVICE_EDIT_UUID = 29;
+	const DEVICE_EDIT_CLASSROOM = 30;
 	const DEVICE_DELETE = 7;
 	const DEVICES_MANAGE = 8;
 
@@ -31,8 +33,14 @@ class Perm {
 	const RESULT_DELETE = 24;
 	const RESULTS_MANAGE = 25;
 
+	const STUDENT_CREATE = 32;
+	const STUDENT_EDIT = 33;
+	const STUDENT_DELETE = 34;
+	const STUDENTS_MANAGE = 35;
+
 	const USER_CREATE = 17;
 	const USER_EDIT = 18;
+	const USER_EDIT_TYPE = 31;
 	const USER_EDIT_ROLE = 19;
 	const USER_DELETE = 20;
 	const USERS_MANAGE = 21;
@@ -58,6 +66,8 @@ class Perm {
 
 		self::DEVICE_CREATE => 'Create Device',
 		self::DEVICE_EDIT => 'Edit Device',
+		self::DEVICE_EDIT_UUID => 'Edit Device UUID',
+		self::DEVICE_EDIT_CLASSROOM => 'Edit Device Classrom',
 		self::DEVICE_DELETE => 'Delete Device',
 		self::DEVICES_MANAGE => 'Manage Devices',
 
@@ -78,8 +88,14 @@ class Perm {
 		self::RESULT_DELETE => 'Delete Result',
 		self::RESULTS_MANAGE => 'Manage Results',
 
+		self::STUDENT_CREATE => 'Create Student',
+		self::STUDENT_EDIT => 'Edit Student',
+		self::STUDENT_DELETE => 'Delete Student',
+		self::STUDENTS_MANAGE => 'Manage Students',
+
 		self::USER_CREATE => 'Create User',
 		self::USER_EDIT => 'Edit User',
+		self::USER_EDIT_TYPE => 'Edit User Type',
 		self::USER_EDIT_ROLE => 'Edit User Role',
 		self::USER_DELETE => 'Delete User',
 		self::USERS_MANAGE => 'Manage Users'

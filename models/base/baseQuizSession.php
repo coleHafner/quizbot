@@ -534,6 +534,148 @@ abstract class baseQuizSession extends ApplicationModel {
 	}
 
 	/**
+	 * Returns a Query for selecting quiz_session_attempt Objects(rows) from the quiz_session_attempt table
+	 * with a quiz_session_id that matches $this->id.
+	 * @return Query
+	 */
+	function getQuizSessionAttemptsRelatedByQuizSessionIdQuery(Query $q = null) {
+		return $this->getForeignObjectsQuery('quiz_session_attempt', 'quiz_session_id', 'id', $q);
+	}
+
+	/**
+	 * Returns the count of QuizSessionAttempt Objects(rows) from the quiz_session_attempt table
+	 * with a quiz_session_id that matches $this->id.
+	 * @return int
+	 */
+	function countQuizSessionAttemptsRelatedByQuizSessionId(Query $q = null) {
+		if (null === $this->getid()) {
+			return 0;
+		}
+		return QuizSessionAttempt::doCount($this->getQuizSessionAttemptsRelatedByQuizSessionIdQuery($q));
+	}
+
+	/**
+	 * Deletes the quiz_session_attempt Objects(rows) from the quiz_session_attempt table
+	 * with a quiz_session_id that matches $this->id.
+	 * @return int
+	 */
+	function deleteQuizSessionAttemptsRelatedByQuizSessionId(Query $q = null) {
+		if (null === $this->getid()) {
+			return 0;
+		}
+		$this->QuizSessionAttemptsRelatedByQuizSessionId_c = array();
+		return QuizSessionAttempt::doDelete($this->getQuizSessionAttemptsRelatedByQuizSessionIdQuery($q));
+	}
+
+	protected $QuizSessionAttemptsRelatedByQuizSessionId_c = array();
+
+	/**
+	 * Returns an array of QuizSessionAttempt objects with a quiz_session_id
+	 * that matches $this->id.
+	 * When first called, this method will cache the result.
+	 * After that, if $this->id is not modified, the
+	 * method will return the cached result instead of querying the database
+	 * a second time(for performance purposes).
+	 * @return QuizSessionAttempt[]
+	 */
+	function getQuizSessionAttemptsRelatedByQuizSessionId(Query $q = null) {
+		if (null === $this->getid()) {
+			return array();
+		}
+
+		if (
+			null === $q
+			&& $this->getCacheResults()
+			&& !empty($this->QuizSessionAttemptsRelatedByQuizSessionId_c)
+			&& !$this->isColumnModified('id')
+		) {
+			return $this->QuizSessionAttemptsRelatedByQuizSessionId_c;
+		}
+
+		$result = QuizSessionAttempt::doSelect($this->getQuizSessionAttemptsRelatedByQuizSessionIdQuery($q));
+
+		if ($q !== null) {
+			return $result;
+		}
+
+		if ($this->getCacheResults()) {
+			$this->QuizSessionAttemptsRelatedByQuizSessionId_c = $result;
+		}
+		return $result;
+	}
+
+	/**
+	 * Returns a Query for selecting quiz_session_device Objects(rows) from the quiz_session_device table
+	 * with a quiz_session_id that matches $this->id.
+	 * @return Query
+	 */
+	function getQuizSessionDevicesRelatedByQuizSessionIdQuery(Query $q = null) {
+		return $this->getForeignObjectsQuery('quiz_session_device', 'quiz_session_id', 'id', $q);
+	}
+
+	/**
+	 * Returns the count of QuizSessionDevice Objects(rows) from the quiz_session_device table
+	 * with a quiz_session_id that matches $this->id.
+	 * @return int
+	 */
+	function countQuizSessionDevicesRelatedByQuizSessionId(Query $q = null) {
+		if (null === $this->getid()) {
+			return 0;
+		}
+		return QuizSessionDevice::doCount($this->getQuizSessionDevicesRelatedByQuizSessionIdQuery($q));
+	}
+
+	/**
+	 * Deletes the quiz_session_device Objects(rows) from the quiz_session_device table
+	 * with a quiz_session_id that matches $this->id.
+	 * @return int
+	 */
+	function deleteQuizSessionDevicesRelatedByQuizSessionId(Query $q = null) {
+		if (null === $this->getid()) {
+			return 0;
+		}
+		$this->QuizSessionDevicesRelatedByQuizSessionId_c = array();
+		return QuizSessionDevice::doDelete($this->getQuizSessionDevicesRelatedByQuizSessionIdQuery($q));
+	}
+
+	protected $QuizSessionDevicesRelatedByQuizSessionId_c = array();
+
+	/**
+	 * Returns an array of QuizSessionDevice objects with a quiz_session_id
+	 * that matches $this->id.
+	 * When first called, this method will cache the result.
+	 * After that, if $this->id is not modified, the
+	 * method will return the cached result instead of querying the database
+	 * a second time(for performance purposes).
+	 * @return QuizSessionDevice[]
+	 */
+	function getQuizSessionDevicesRelatedByQuizSessionId(Query $q = null) {
+		if (null === $this->getid()) {
+			return array();
+		}
+
+		if (
+			null === $q
+			&& $this->getCacheResults()
+			&& !empty($this->QuizSessionDevicesRelatedByQuizSessionId_c)
+			&& !$this->isColumnModified('id')
+		) {
+			return $this->QuizSessionDevicesRelatedByQuizSessionId_c;
+		}
+
+		$result = QuizSessionDevice::doSelect($this->getQuizSessionDevicesRelatedByQuizSessionIdQuery($q));
+
+		if ($q !== null) {
+			return $result;
+		}
+
+		if ($this->getCacheResults()) {
+			$this->QuizSessionDevicesRelatedByQuizSessionId_c = $result;
+		}
+		return $result;
+	}
+
+	/**
 	 * Returns a Query for selecting quiz_session_question Objects(rows) from the quiz_session_question table
 	 * with a quiz_session_id that matches $this->id.
 	 * @return Query
@@ -602,6 +744,78 @@ abstract class baseQuizSession extends ApplicationModel {
 			$this->QuizSessionQuestionsRelatedByQuizSessionId_c = $result;
 		}
 		return $result;
+	}
+
+	/**
+	 * Convenience function for QuizSession::getQuizSessionAttemptsRelatedByquiz_session_id
+	 * @return QuizSessionAttempt[]
+	 * @see QuizSession::getQuizSessionAttemptsRelatedByQuizSessionId
+	 */
+	function getQuizSessionAttempts($extra = null) {
+		return $this->getQuizSessionAttemptsRelatedByQuizSessionId($extra);
+	}
+
+	/**
+	  * Convenience function for QuizSession::getQuizSessionAttemptsRelatedByquiz_session_idQuery
+	  * @return Query
+	  * @see QuizSession::getQuizSessionAttemptsRelatedByquiz_session_idQuery
+	  */
+	function getQuizSessionAttemptsQuery(Query $q = null) {
+		return $this->getForeignObjectsQuery('quiz_session_attempt', 'quiz_session_id','id', $q);
+	}
+
+	/**
+	  * Convenience function for QuizSession::deleteQuizSessionAttemptsRelatedByquiz_session_id
+	  * @return int
+	  * @see QuizSession::deleteQuizSessionAttemptsRelatedByquiz_session_id
+	  */
+	function deleteQuizSessionAttempts(Query $q = null) {
+		return $this->deleteQuizSessionAttemptsRelatedByQuizSessionId($q);
+	}
+
+	/**
+	  * Convenience function for QuizSession::countQuizSessionAttemptsRelatedByquiz_session_id
+	  * @return int
+	  * @see QuizSession::countQuizSessionAttemptsRelatedByQuizSessionId
+	  */
+	function countQuizSessionAttempts(Query $q = null) {
+		return $this->countQuizSessionAttemptsRelatedByQuizSessionId($q);
+	}
+
+	/**
+	 * Convenience function for QuizSession::getQuizSessionDevicesRelatedByquiz_session_id
+	 * @return QuizSessionDevice[]
+	 * @see QuizSession::getQuizSessionDevicesRelatedByQuizSessionId
+	 */
+	function getQuizSessionDevices($extra = null) {
+		return $this->getQuizSessionDevicesRelatedByQuizSessionId($extra);
+	}
+
+	/**
+	  * Convenience function for QuizSession::getQuizSessionDevicesRelatedByquiz_session_idQuery
+	  * @return Query
+	  * @see QuizSession::getQuizSessionDevicesRelatedByquiz_session_idQuery
+	  */
+	function getQuizSessionDevicesQuery(Query $q = null) {
+		return $this->getForeignObjectsQuery('quiz_session_device', 'quiz_session_id','id', $q);
+	}
+
+	/**
+	  * Convenience function for QuizSession::deleteQuizSessionDevicesRelatedByquiz_session_id
+	  * @return int
+	  * @see QuizSession::deleteQuizSessionDevicesRelatedByquiz_session_id
+	  */
+	function deleteQuizSessionDevices(Query $q = null) {
+		return $this->deleteQuizSessionDevicesRelatedByQuizSessionId($q);
+	}
+
+	/**
+	  * Convenience function for QuizSession::countQuizSessionDevicesRelatedByquiz_session_id
+	  * @return int
+	  * @see QuizSession::countQuizSessionDevicesRelatedByQuizSessionId
+	  */
+	function countQuizSessionDevices(Query $q = null) {
+		return $this->countQuizSessionDevicesRelatedByQuizSessionId($q);
 	}
 
 	/**

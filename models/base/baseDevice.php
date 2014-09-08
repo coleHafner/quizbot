@@ -11,8 +11,8 @@ abstract class baseDevice extends ApplicationModel {
 	const ID = 'device.id';
 	const SESSION_ID = 'device.session_id';
 	const CLASSROOM_ID = 'device.classroom_id';
-	const USER_ID = 'device.user_id';
 	const UUID = 'device.uuid';
+	const COLOR = 'device.color';
 	const NICKNAME = 'device.nickname';
 	const ARCHIVED = 'device.archived';
 	const CREATED = 'device.created';
@@ -72,8 +72,8 @@ abstract class baseDevice extends ApplicationModel {
 		Device::ID,
 		Device::SESSION_ID,
 		Device::CLASSROOM_ID,
-		Device::USER_ID,
 		Device::UUID,
+		Device::COLOR,
 		Device::NICKNAME,
 		Device::ARCHIVED,
 		Device::CREATED,
@@ -88,8 +88,8 @@ abstract class baseDevice extends ApplicationModel {
 		'id',
 		'session_id',
 		'classroom_id',
-		'user_id',
 		'uuid',
+		'color',
 		'nickname',
 		'archived',
 		'created',
@@ -104,8 +104,8 @@ abstract class baseDevice extends ApplicationModel {
 		'id' => Model::COLUMN_TYPE_INTEGER,
 		'session_id' => Model::COLUMN_TYPE_INTEGER,
 		'classroom_id' => Model::COLUMN_TYPE_INTEGER,
-		'user_id' => Model::COLUMN_TYPE_INTEGER,
 		'uuid' => Model::COLUMN_TYPE_VARCHAR,
+		'color' => Model::COLUMN_TYPE_VARCHAR,
 		'nickname' => Model::COLUMN_TYPE_VARCHAR,
 		'archived' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
 		'created' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
@@ -131,16 +131,16 @@ abstract class baseDevice extends ApplicationModel {
 	protected $classroom_id;
 
 	/**
-	 * `user_id` INTEGER DEFAULT ''
-	 * @var int
-	 */
-	protected $user_id;
-
-	/**
 	 * `uuid` VARCHAR NOT NULL
 	 * @var string
 	 */
 	protected $uuid;
+
+	/**
+	 * `color` VARCHAR
+	 * @var string
+	 */
+	protected $color;
 
 	/**
 	 * `nickname` VARCHAR
@@ -254,42 +254,6 @@ abstract class baseDevice extends ApplicationModel {
 	}
 
 	/**
-	 * Gets the value of the user_id field
-	 */
-	function getUserId() {
-		return $this->user_id;
-	}
-
-	/**
-	 * Sets the value of the user_id field
-	 * @return Device
-	 */
-	function setUserId($value) {
-		return $this->setColumnValue('user_id', $value, Model::COLUMN_TYPE_INTEGER);
-	}
-
-	/**
-	 * Convenience function for Device::getUserId
-	 * final because getUserId should be extended instead
-	 * to ensure consistent behavior
-	 * @see Device::getUserId
-	 */
-	final function getUser_id() {
-		return $this->getUserId();
-	}
-
-	/**
-	 * Convenience function for Device::setUserId
-	 * final because setUserId should be extended instead
-	 * to ensure consistent behavior
-	 * @see Device::setUserId
-	 * @return Device
-	 */
-	final function setUser_id($value) {
-		return $this->setUserId($value);
-	}
-
-	/**
 	 * Gets the value of the uuid field
 	 */
 	function getUuid() {
@@ -302,6 +266,21 @@ abstract class baseDevice extends ApplicationModel {
 	 */
 	function setUuid($value) {
 		return $this->setColumnValue('uuid', $value, Model::COLUMN_TYPE_VARCHAR);
+	}
+
+	/**
+	 * Gets the value of the color field
+	 */
+	function getColor() {
+		return $this->color;
+	}
+
+	/**
+	 * Sets the value of the color field
+	 * @return Device
+	 */
+	function setColor($value) {
+		return $this->setColumnValue('color', $value, Model::COLUMN_TYPE_VARCHAR);
 	}
 
 	/**
@@ -437,21 +416,21 @@ abstract class baseDevice extends ApplicationModel {
 	}
 
 	/**
-	 * Searches the database for a row with a user_id
-	 * value that matches the one provided
-	 * @return Device
-	 */
-	static function retrieveByUserId($value) {
-		return static::retrieveByColumn('user_id', $value);
-	}
-
-	/**
 	 * Searches the database for a row with a uuid
 	 * value that matches the one provided
 	 * @return Device
 	 */
 	static function retrieveByUuid($value) {
 		return static::retrieveByColumn('uuid', $value);
+	}
+
+	/**
+	 * Searches the database for a row with a color
+	 * value that matches the one provided
+	 * @return Device
+	 */
+	static function retrieveByColor($value) {
+		return static::retrieveByColumn('color', $value);
 	}
 
 	/**
@@ -499,87 +478,10 @@ abstract class baseDevice extends ApplicationModel {
 		$this->id = (null === $this->id) ? null : (int) $this->id;
 		$this->session_id = (null === $this->session_id) ? null : (int) $this->session_id;
 		$this->classroom_id = (null === $this->classroom_id) ? null : (int) $this->classroom_id;
-		$this->user_id = (null === $this->user_id) ? null : (int) $this->user_id;
 		$this->archived = (null === $this->archived) ? null : (int) $this->archived;
 		$this->created = (null === $this->created) ? null : (int) $this->created;
 		$this->updated = (null === $this->updated) ? null : (int) $this->updated;
 		return $this;
-	}
-
-	/**
-	 * @return Device
-	 */
-	function setUser(User $user = null) {
-		return $this->setUserRelatedByUserId($user);
-	}
-
-	/**
-	 * @return Device
-	 */
-	function setUserRelatedByUserId(User $user = null) {
-		if (null === $user) {
-			$this->setuser_id(null);
-		} else {
-			if (!$user->getid()) {
-				throw new Exception('Cannot connect a User without a id');
-			}
-			$this->setuser_id($user->getid());
-		}
-		return $this;
-	}
-
-	/**
-	 * Returns a user object with a id
-	 * that matches $this->user_id.
-	 * @return User
-	 */
-	function getUser() {
-		return $this->getUserRelatedByUserId();
-	}
-
-	/**
-	 * Returns a user object with a id
-	 * that matches $this->user_id.
-	 * @return User
-	 */
-	function getUserRelatedByUserId() {
-		$fk_value = $this->getuser_id();
-		if (null === $fk_value) {
-			return null;
-		}
-		return User::retrieveByPK($fk_value);
-	}
-
-	static function doSelectJoinUser(Query $q = null, $join_type = Query::LEFT_JOIN) {
-		return static::doSelectJoinUserRelatedByUserId($q, $join_type);
-	}
-
-	/**
-	 * @return Device[]
-	 */
-	static function doSelectJoinUserRelatedByUserId(Query $q = null, $join_type = Query::LEFT_JOIN) {
-		$q = $q ? clone $q : new Query;
-		$columns = $q->getColumns();
-		$alias = $q->getAlias();
-		$this_table = $alias ? $alias : static::getTableName();
-		if (!$columns) {
-			if ($alias) {
-				foreach (static::getColumns() as $column_name) {
-					$columns[] = $alias . '.' . $column_name;
-				}
-			} else {
-				$columns = static::getColumns();
-			}
-		}
-
-		$to_table = User::getTableName();
-		$q->join($to_table, $this_table . '.user_id = ' . $to_table . '.id', $join_type);
-		foreach (User::getColumns() as $column) {
-			$columns[] = $column;
-		}
-		$q->setColumns($columns);
-
-		return static::doSelect($q, array('User'));
 	}
 
 	/**
@@ -753,13 +655,6 @@ abstract class baseDevice extends ApplicationModel {
 			}
 		}
 
-		$to_table = User::getTableName();
-		$q->join($to_table, $this_table . '.user_id = ' . $to_table . '.id', $join_type);
-		foreach (User::getColumns() as $column) {
-			$columns[] = $column;
-		}
-		$classes[] = 'User';
-	
 		$to_table = Classroom::getTableName();
 		$q->join($to_table, $this_table . '.classroom_id = ' . $to_table . '.id', $join_type);
 		foreach (Classroom::getColumns() as $column) {
@@ -779,51 +674,51 @@ abstract class baseDevice extends ApplicationModel {
 	}
 
 	/**
-	 * Returns a Query for selecting quiz_session_attempt Objects(rows) from the quiz_session_attempt table
+	 * Returns a Query for selecting quiz_session_device Objects(rows) from the quiz_session_device table
 	 * with a device_id that matches $this->id.
 	 * @return Query
 	 */
-	function getQuizSessionAttemptsRelatedByDeviceIdQuery(Query $q = null) {
-		return $this->getForeignObjectsQuery('quiz_session_attempt', 'device_id', 'id', $q);
+	function getQuizSessionDevicesRelatedByDeviceIdQuery(Query $q = null) {
+		return $this->getForeignObjectsQuery('quiz_session_device', 'device_id', 'id', $q);
 	}
 
 	/**
-	 * Returns the count of QuizSessionAttempt Objects(rows) from the quiz_session_attempt table
+	 * Returns the count of QuizSessionDevice Objects(rows) from the quiz_session_device table
 	 * with a device_id that matches $this->id.
 	 * @return int
 	 */
-	function countQuizSessionAttemptsRelatedByDeviceId(Query $q = null) {
+	function countQuizSessionDevicesRelatedByDeviceId(Query $q = null) {
 		if (null === $this->getid()) {
 			return 0;
 		}
-		return QuizSessionAttempt::doCount($this->getQuizSessionAttemptsRelatedByDeviceIdQuery($q));
+		return QuizSessionDevice::doCount($this->getQuizSessionDevicesRelatedByDeviceIdQuery($q));
 	}
 
 	/**
-	 * Deletes the quiz_session_attempt Objects(rows) from the quiz_session_attempt table
+	 * Deletes the quiz_session_device Objects(rows) from the quiz_session_device table
 	 * with a device_id that matches $this->id.
 	 * @return int
 	 */
-	function deleteQuizSessionAttemptsRelatedByDeviceId(Query $q = null) {
+	function deleteQuizSessionDevicesRelatedByDeviceId(Query $q = null) {
 		if (null === $this->getid()) {
 			return 0;
 		}
-		$this->QuizSessionAttemptsRelatedByDeviceId_c = array();
-		return QuizSessionAttempt::doDelete($this->getQuizSessionAttemptsRelatedByDeviceIdQuery($q));
+		$this->QuizSessionDevicesRelatedByDeviceId_c = array();
+		return QuizSessionDevice::doDelete($this->getQuizSessionDevicesRelatedByDeviceIdQuery($q));
 	}
 
-	protected $QuizSessionAttemptsRelatedByDeviceId_c = array();
+	protected $QuizSessionDevicesRelatedByDeviceId_c = array();
 
 	/**
-	 * Returns an array of QuizSessionAttempt objects with a device_id
+	 * Returns an array of QuizSessionDevice objects with a device_id
 	 * that matches $this->id.
 	 * When first called, this method will cache the result.
 	 * After that, if $this->id is not modified, the
 	 * method will return the cached result instead of querying the database
 	 * a second time(for performance purposes).
-	 * @return QuizSessionAttempt[]
+	 * @return QuizSessionDevice[]
 	 */
-	function getQuizSessionAttemptsRelatedByDeviceId(Query $q = null) {
+	function getQuizSessionDevicesRelatedByDeviceId(Query $q = null) {
 		if (null === $this->getid()) {
 			return array();
 		}
@@ -831,58 +726,58 @@ abstract class baseDevice extends ApplicationModel {
 		if (
 			null === $q
 			&& $this->getCacheResults()
-			&& !empty($this->QuizSessionAttemptsRelatedByDeviceId_c)
+			&& !empty($this->QuizSessionDevicesRelatedByDeviceId_c)
 			&& !$this->isColumnModified('id')
 		) {
-			return $this->QuizSessionAttemptsRelatedByDeviceId_c;
+			return $this->QuizSessionDevicesRelatedByDeviceId_c;
 		}
 
-		$result = QuizSessionAttempt::doSelect($this->getQuizSessionAttemptsRelatedByDeviceIdQuery($q));
+		$result = QuizSessionDevice::doSelect($this->getQuizSessionDevicesRelatedByDeviceIdQuery($q));
 
 		if ($q !== null) {
 			return $result;
 		}
 
 		if ($this->getCacheResults()) {
-			$this->QuizSessionAttemptsRelatedByDeviceId_c = $result;
+			$this->QuizSessionDevicesRelatedByDeviceId_c = $result;
 		}
 		return $result;
 	}
 
 	/**
-	 * Convenience function for Device::getQuizSessionAttemptsRelatedBydevice_id
-	 * @return QuizSessionAttempt[]
-	 * @see Device::getQuizSessionAttemptsRelatedByDeviceId
+	 * Convenience function for Device::getQuizSessionDevicesRelatedBydevice_id
+	 * @return QuizSessionDevice[]
+	 * @see Device::getQuizSessionDevicesRelatedByDeviceId
 	 */
-	function getQuizSessionAttempts($extra = null) {
-		return $this->getQuizSessionAttemptsRelatedByDeviceId($extra);
+	function getQuizSessionDevices($extra = null) {
+		return $this->getQuizSessionDevicesRelatedByDeviceId($extra);
 	}
 
 	/**
-	  * Convenience function for Device::getQuizSessionAttemptsRelatedBydevice_idQuery
+	  * Convenience function for Device::getQuizSessionDevicesRelatedBydevice_idQuery
 	  * @return Query
-	  * @see Device::getQuizSessionAttemptsRelatedBydevice_idQuery
+	  * @see Device::getQuizSessionDevicesRelatedBydevice_idQuery
 	  */
-	function getQuizSessionAttemptsQuery(Query $q = null) {
-		return $this->getForeignObjectsQuery('quiz_session_attempt', 'device_id','id', $q);
+	function getQuizSessionDevicesQuery(Query $q = null) {
+		return $this->getForeignObjectsQuery('quiz_session_device', 'device_id','id', $q);
 	}
 
 	/**
-	  * Convenience function for Device::deleteQuizSessionAttemptsRelatedBydevice_id
+	  * Convenience function for Device::deleteQuizSessionDevicesRelatedBydevice_id
 	  * @return int
-	  * @see Device::deleteQuizSessionAttemptsRelatedBydevice_id
+	  * @see Device::deleteQuizSessionDevicesRelatedBydevice_id
 	  */
-	function deleteQuizSessionAttempts(Query $q = null) {
-		return $this->deleteQuizSessionAttemptsRelatedByDeviceId($q);
+	function deleteQuizSessionDevices(Query $q = null) {
+		return $this->deleteQuizSessionDevicesRelatedByDeviceId($q);
 	}
 
 	/**
-	  * Convenience function for Device::countQuizSessionAttemptsRelatedBydevice_id
+	  * Convenience function for Device::countQuizSessionDevicesRelatedBydevice_id
 	  * @return int
-	  * @see Device::countQuizSessionAttemptsRelatedByDeviceId
+	  * @see Device::countQuizSessionDevicesRelatedByDeviceId
 	  */
-	function countQuizSessionAttempts(Query $q = null) {
-		return $this->countQuizSessionAttemptsRelatedByDeviceId($q);
+	function countQuizSessionDevices(Query $q = null) {
+		return $this->countQuizSessionDevicesRelatedByDeviceId($q);
 	}
 
 	/**

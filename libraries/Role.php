@@ -21,6 +21,8 @@ class Role {
 
 			Perm::DEVICE_CREATE,
 			Perm::DEVICE_EDIT,
+			Perm::DEVICE_EDIT_UUID,
+			Perm::DEVICE_EDIT_CLASSROOM,
 			Perm::DEVICE_DELETE,
 			Perm::DEVICES_MANAGE,
 
@@ -43,6 +45,7 @@ class Role {
 
 			Perm::USER_CREATE,
 			Perm::USER_EDIT,
+			Perm::USER_EDIT_TYPE,
 			Perm::USER_EDIT_ROLE,
 			Perm::USER_DELETE,
 			Perm::USERS_MANAGE
@@ -55,6 +58,9 @@ class Role {
 			Perm::CLASSROOM_ACT_AS,
 
 			Perm::DEVICE_CREATE,
+			Perm::DEVICE_EDIT,
+			Perm::DEVICE_DELETE,
+			Perm::DEVICE_EDIT_UUID,
 			Perm::DEVICES_MANAGE,
 
 			Perm::QUESTION_CREATE,
@@ -66,10 +72,12 @@ class Role {
 			Perm::QUIZ_DELETE,
 			Perm::QUIZZES_MANAGE,
 
-			Perm::USER_CREATE,
-			Perm::USER_EDIT,
-			Perm::USER_DELETE,
-			Perm::USERS_MANAGE
+			Perm::RESULTS_MANAGE,
+
+			Perm::STUDENT_CREATE,
+			Perm::STUDENT_EDIT,
+			Perm::STUDENT_DELETE,
+			Perm::STUDENTS_MANAGE
 		),
 
 		self::STUDENT => array(

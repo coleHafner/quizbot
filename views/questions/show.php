@@ -1,15 +1,19 @@
 <h1>View Question</h1>
 <div class="action-buttons ui-helper-clearfix">
-	<a href="<?php echo site_url('questions/edit/' . $question->getId()) ?>"
-		class="button" data-icon="pencil" title="Edit Question">
-		Edit	</a>
-	<a href="<?php echo site_url('questions/delete/' . $question->getId()) ?>"
-		class="button" data-icon="trash" title="Delete Question"
-		onclick="return confirm('Are you sure?');">
-		Delete	</a>
-	<a href="<?php echo site_url('question-answers?question_id=' . $question->getId()) ?>"
-		class="button" data-icon="carat-1-e" title="Question Answers Question">
-		Question Answers	</a>
+
+	<?php if (App::can(Perm::ACTION_EDIT, $question)) : ?>
+		<a href="<?php echo site_url('questions/edit/' . $question->getId()) ?>"
+			class="button" data-icon="pencil" title="Edit Question">
+			Edit	</a>
+	<?php endif; ?>
+
+	<?php
+	View::load('partials/delete-button', array(
+		'record' => $question,
+		'record_type' => 'Question',
+		'delete_path' => 'questions'
+	));
+	?>
 </div>
 <div class="ui-widget-content ui-corner-all ui-helper-clearfix">
 	<div class="field-wrapper">

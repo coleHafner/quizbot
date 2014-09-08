@@ -109,15 +109,14 @@ if (isset($_REQUEST['dir'])) {
 					</a>
 				<?php endif; ?>
 
-				<?php if (App::can(Perm::ACTION_DELETE, $question)) : ?>
-					<a class="button"
-						data-icon="trash"
-						title="Delete Question"
-						href="#"
-						onclick="if (confirm('Are you sure?')) { window.location.href = '<?php echo site_url('questions/delete/' . $question->getId()) ?>'; } return false">
-						Delete
-					</a>
-				<?php endif; ?>
+				<?php
+				View::load('partials/delete-button', array(
+					'record' => $question,
+					'record_type' => 'Question',
+					'delete_path' => 'questions'
+				));
+				?>
+
 			</td>
 		</tr>
 <?php endforeach ?>

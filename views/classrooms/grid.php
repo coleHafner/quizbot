@@ -96,16 +96,13 @@ if (isset($_REQUEST['dir'])) {
 					</a>
 				<?php endif; ?>
 
-				<?php if (App::can(Perm::ACTION_DELETE, $classroom)) : ?>
-					<a
-						class="button"
-						data-icon="trash"
-						title="Delete Classroom"
-						href="#"
-						onclick="if (confirm('Are you sure?')) { window.location.href = '<?php echo site_url('classrooms/delete/' . $classroom->getId()) ?>'; } return false">
-						Delete
-					</a>
-				<?php endif; ?>
+				<?php
+				View::load('partials/delete-button', array(
+					'record' => $classroom,
+					'record_type' => 'Classroom',
+					'delete_path' => 'classrooms'
+				));
+				?>
 			</td>
 		</tr>
 <?php endforeach ?>

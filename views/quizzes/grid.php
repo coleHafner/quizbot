@@ -80,16 +80,13 @@ if (isset($_REQUEST['dir'])) {
 					</a>
 				<?php endif; ?>
 
-				<?php if (App::can(Perm::ACTION_DELETE, $quiz)) : ?>
-					<a
-						class="button"
-						data-icon="trash"
-						title="Delete Quiz"
-						href="#"
-						onclick="if (confirm('Are you sure?')) { window.location.href = '<?php echo site_url('quizzes/delete/' . $quiz->getId()) ?>'; } return false">
-						Delete
-					</a>
-				<?php endif; ?>
+				<?php
+				View::load('partials/delete-button', array(
+					'record' => $quiz,
+					'record_type' => 'Quiz',
+					'delete_path' => 'quizzes'
+				));
+				?>
 
 				<?php if (App::can(Perm::ACTION_EDIT, $quiz)) : ?>
 					<a

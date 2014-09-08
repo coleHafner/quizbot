@@ -27,6 +27,23 @@ if (isset($_REQUEST['dir'])) {
 				</a>
 			</th>
 
+			<th class="ui-widget-header ui-corner-tl">
+				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => User::FIRST_NAME))) ?>">
+					<?php if ( @$_REQUEST['order_by'] == User::FIRST_NAME): ?>
+						<span class="ui-icon ui-icon-carat-1-<?php echo isset($_REQUEST['dir']) ? 's' : 'n' ?>"></span>
+					<?php endif ?>
+					First Name
+				</a>
+			</th>
+			<th class="ui-widget-header ">
+				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => User::LAST_NAME))) ?>">
+					<?php if ( @$_REQUEST['order_by'] == User::LAST_NAME): ?>
+						<span class="ui-icon ui-icon-carat-1-<?php echo isset($_REQUEST['dir']) ? 's' : 'n' ?>"></span>
+					<?php endif ?>
+					Last Name
+				</a>
+			</th>
+
 			<?php if (App::isAdmin()) : ?>
 				<th class="ui-widget-header ">
 					<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => User::TYPE))) ?>">
@@ -64,8 +81,8 @@ if (isset($_REQUEST['dir'])) {
 				</a>
 			</th>
 			<th class="ui-widget-header ">
-				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => User::ACTIVE))) ?>">
-					<?php if ( @$_REQUEST['order_by'] == User::ACTIVE): ?>
+				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => User::ARCHIVED))) ?>">
+					<?php if ( @$_REQUEST['order_by'] == User::ARCHIVED): ?>
 						<span class="ui-icon ui-icon-carat-1-<?php echo isset($_REQUEST['dir']) ? 's' : 'n' ?>"></span>
 					<?php endif ?>
 					Status
@@ -79,6 +96,8 @@ if (isset($_REQUEST['dir'])) {
 		<tr class="<?php echo ($key & 1) ? 'even' : 'odd' ?> ui-widget-content">
 			<td><?php echo h($user->getId()) ?>&nbsp;</td>
 			<td><?php echo h($user->getEmail()) ?>&nbsp;</td>
+			<td><?php echo h($user->getFirstName()) ?>&nbsp;</td>
+			<td><?php echo h($user->getLastName()) ?>&nbsp;</td>
 
 			<?php if (App::isAdmin()) : ?>
 				<td><?php echo h($user->getTypeName()) ?>&nbsp;</td>
@@ -96,7 +115,7 @@ if (isset($_REQUEST['dir'])) {
 						class="button"
 						data-icon="search"
 						title="Show User"
-						href="<?php echo site_url('users/show/' . $user->getId()) ?>">
+						href="<?php echo site_url($view_dir . '/show/' . $user->getId()) ?>">
 						Show
 					</a>
 				<?php endif; ?>
@@ -106,21 +125,18 @@ if (isset($_REQUEST['dir'])) {
 						class="button"
 						data-icon="pencil"
 						title="Edit User"
-						href="<?php echo site_url('users/edit/' . $user->getId()) ?>">
+						href="<?php echo site_url($view_dir . '/edit/' . $user->getId()) ?>">
 						Edit
 					</a>
 				<?php endif; ?>
 
-				<?php if (App::can(Perm::ACTION_DELETE, $user)) : ?>
-					<a
-						class="button"
-						data-icon="trash"
-						title="Delete User"
-						href="#"
-						onclick="if (confirm('Are you sure?')) { window.location.href = '<?php echo site_url('users/delete/' . $user->getId()) ?>'; } return false">
-						Delete
-					</a>
-				<?php endif; ?>
+				<?php
+				View::load('partials/delete-button', array(
+					'record' => $user,
+					'record_type' => $user_type,
+					'delete_path' => $view_dir
+				));
+				?>
 
 			</td>
 		</tr>

@@ -24,19 +24,19 @@ abstract class ApplicationController extends Controller {
 			$this['actions']['Quizzes'] = site_url('quizzes');
 		}
 
-		if (App::hasPerm(Perm::RESULTS_MANAGE)) {
-			$this['actions']['Results'] = site_url('quiz-session-attempts');
-		}
-		
-		if (App::hasPerm(Perm::USERS_MANAGE) && App::getClassroom()) {
-			$this['actions']['Students'] = site_url('users');
+		if (App::hasPerm(Perm::STUDENTS_MANAGE) && App::getClassroom()) {
+			$this['actions']['Students'] = site_url('students');
 		}
 
 		if (App::hasPerm(Perm::DEVICES_MANAGE)) {
 			$this['actions']['Clickers'] = site_url('devices');
 		}
 
-		if (App::hasPerm(Perm::USERS_MANAGE) && App::isAdmin()) {
+		if (App::hasPerm(Perm::RESULTS_MANAGE)) {
+			$this['actions']['Results'] = site_url('quiz-session-attempts');
+		}
+
+		if (App::hasPerm(Perm::USERS_MANAGE)) {
 			$this['actions']['Users'] = site_url('users');
 		}
 
@@ -70,6 +70,96 @@ abstract class ApplicationController extends Controller {
 		} else {
 			return parent::doAction($action_name, $params);
 		}
+	}
+
+	/**
+	 * Deletes the record with the id. Examples:
+	 * GET /users/delete/1
+	 * DELETE /rest/users/1.json
+	 */
+	function delete($id = null) {
+		$redirect_to = $this->getRedirectTo();
+		$class_name = $this->getTargetRecordType();
+		$record = $class_name::retrieveByPk($id);
+
+		try {
+
+			if (!$record) {
+				throw new RuntimeException('No ' . $class_type . ' found for id #' . $id);
+			}
+
+			if (!App::can(Perm::ACTION_DELETE, $record)) {
+				throw new RuntimeException('You do not have permission to delete ' . $class_type . ' #' . $id);
+			}
+
+			if (null !== $record && $record->delete()) {
+				$this['messages'][] = $class_name . ' deleted';
+			} else {
+				$this['errors'][] = $class_name . ' could not be deleted';
+			}
+		} catch (Exception $e) {
+			$this['errors'][] = $e->getMessage();
+		}
+
+		if ($this->outputFormat === 'html') {
+			$this->flash['errors'] = @$this['errors'];
+			$this->flash['messages'] = @$this['messages'];
+			$this->redirect($redirect_to);
+		}
+	}
+
+	/**
+	 * Deletes the User with the id. Examples:
+	 * GET /users/delete/1
+	 * DELETE /rest/users/1.json
+	 */
+	function activate($id = null) {
+		$redirect_to = $this->getRedirectTo();
+		$class_name = $this->getTargetRecordType();
+		$record = $class_name::retrieveByPk($id);
+
+		try {
+
+			if (!$record) {
+				throw new RuntimeException('No ' . $class_type . ' found for id #' . $id);
+			}
+
+			if (!App::hasPerm(Perm::REACTIVATE)) {
+				throw new RuntimeException('You do not have permission to reactivate ' . $class_type . ' #' . $id);
+			}
+
+			if (null !== $record && $record->activate()) {
+				$this['messages'][] = $class_name . ' reactivated';
+			} else {
+				$this['errors'][] = $class_name . ' could not be reactivated';
+			}
+		} catch (Exception $e) {
+			$this['errors'][] = $e->getMessage();
+		}
+
+		if ($this->outputFormat === 'html') {
+			$this->flash['errors'] = @$this['errors'];
+			$this->flash['messages'] = @$this['messages'];
+			$this->redirect($redirect_to);
+		}
+	}
+
+	protected function getRedirectTo() {
+		return strtolower(str_replace('Controller', '', get_class($this)));
+	}
+
+	protected function getTargetRecordType() {
+		$class_name = ucfirst(strtolower(str_replace('sController', '', get_class($this))));
+
+		if ($class_name == 'Student') {
+			return 'User';
+		}
+
+		if ($class_name == 'Quizze') {
+			return 'Quiz';
+		}
+
+		return $class_name;
 	}
 
 }

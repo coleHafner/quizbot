@@ -30,4 +30,13 @@ abstract class ApplicationModel extends Model {
 
 		return parent::delete();
 	}
+
+	function activate() {
+		if (!method_exists($this, 'getArchived')) {
+			throw new RuntimeException('Error: Record of type "' . get_class($this) . '" does not have an activate method.');
+		}
+
+		$this->setArchived(null);
+		return $this->save();
+	}
 }

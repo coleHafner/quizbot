@@ -9,7 +9,7 @@ class IndexController extends ApplicationController {
 	}
 
 	function login() {
-		$this->layout = 'layouts/login';
+		//$this->layout = 'layouts/login';
 		$this['title'] = 'Login';
 	}
 
@@ -53,5 +53,10 @@ class IndexController extends ApplicationController {
 		App::logout();
 		$this->persistant['messages'][] = 'You have been logged out.';
 		$this->redirect('/login');
+	}
+
+	function switchClassroom($id) {
+		App::setClassroomId($id);
+		$this->redirect('/');
 	}
 }
