@@ -25,4 +25,19 @@ class Quiz extends baseQuiz {
 			->add(Question::ARCHIVED, null)
 		);
 	}
+
+	/**
+	 * Returns all quizzes with at least one question.
+	 * @return	Quiz[]
+	 */
+	static function getQuizzesEligibleForSession(Query $q = null) {
+
+		$q = !$q ? new Query : clone $q;
+
+		$q->join(Quiz::ID, Question::QUIZ_ID)
+			->orderBy(Quiz::NAME, Query::ASC)
+			->groupBy(Quiz::ID);
+
+		return Quiz::doSelect($q);
+	}
 }

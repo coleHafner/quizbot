@@ -5,29 +5,27 @@ class QuizSessionQuestion extends baseQuizSessionQuestion {
 	/**
 	 * @return	QuizSessionQuestion[]
 	 */
-	public function getDuplicates() {
-		$q = Query::create()
+	public function getDuplicate() {
+		return QuizSessionQuestion::doSelectOne(Query::create()
 			->add(QuizSessionQuestion::QUESTION_ID, $this->getQuestionId())
-			->add(QuizSessionQuestion::QUIZ_SESSION_ID, $this->getQuizSessionId());
-
-		return QuizSessionQuestion::doSelect();
-
+			->add(QuizSessionQuestion::QUIZ_SESSION_ID, $this->getQuizSessionId())
+		);
 	}
 
 	/**
 	 * @return	QuizSessionQuestion
 	 */
 	public function saveOrCreate() {
-		$qsqs = $this->getDuplicates();
+		$qsq = $this->getDuplicate();
 
-		if (!$qsqs) {
+		if (!$qsq) {
 			$this->setOpened(time());
 			$this->setQuestionText($this->getQuestion()->getText());
 			$this->save();
 			return $this;
 		}
 
-		return array_shift($qsqs);
+		return $qsq;
 	}
 
 	/**
@@ -37,12 +35,24 @@ class QuizSessionQuestion extends baseQuizSessionQuestion {
 	 */
 	public function close($time = null) {
 		$time = empty($time) ? time() : $time;
-		$this->setClosed($time);
+		$this->setClosed(time());
+		return $this;
+	}
+
+	/**
+	 * @return	QuizSessionQuestion
+	 */
+	public function open() {
+		$this->setClosed(null);
 		return $this;
 	}
 
 	public function isClosed() {
 		return ($this->getClosed() && $this->getOpened());
+	}
+
+	public function isOpen() {
+		return !$this->getClosed();
 	}
 
 	public function allStudentsHaveAnswered() {
@@ -53,6 +63,10 @@ class QuizSessionQuestion extends baseQuizSessionQuestion {
 		}
 
 		return true;
+	}
+
+	public function save() {
+		return parent::save();
 	}
 
 }

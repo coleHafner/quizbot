@@ -7,15 +7,19 @@
 
 		<div class="form-field-wrapper">
 			<label class="form-field-label" for="quiz_id">Quiz</label>
-			<select id="quiz_id" name="quiz_id">
-				<option value="">Select Quiz</option>
-				<?php foreach (App::getClassroom()->getQuizzes() as $quiz) : ?>
-					<option value="<?= $quiz->getId(); ?>"
-						<?= $quiz_session->getQuizId() == $quiz->getId() ? 'selected' : ''; ?>>
-						<?= $quiz; ?>
-					</option>
-				<?php endforeach; ?>
-			</select>
+			<?php if (count($quizzes) > 0) : ?>
+				<select id="quiz_id" name="quiz_id">
+					<option value="">Select Quiz</option>
+					<?php foreach ($quizzes as $quiz) : ?>
+						<option value="<?= $quiz->getId(); ?>"
+							<?= $quiz_session->getQuizId() == $quiz->getId() ? 'selected' : ''; ?>>
+							<?= $quiz; ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			<?php else : ?>
+				There are no quizzes available. <a href="<?= site_url('quizzes/edit/'); ?>">Add one.</a>
+			<?php endif; ?>
 		</div>
 
 		<div class="form-field-wrapper">

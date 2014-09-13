@@ -229,4 +229,21 @@ class App {
 		return $user->can($action, $object);
 	}
 
+	/**
+	 * Finds the index for the current quiz session.
+	 * @return	int
+	 */
+	static function getQuizSessionIndex() {
+
+		if (!array_key_exists('_quiz_session_index', $_SESSION)) {
+			$_SESSION['_quiz_session_index'] = 0;
+		}
+
+		return $_SESSION['_quiz_session_index'];
+	}
+
+	static function setQuizSessionIndex($index) {
+		$_SESSION['_quiz_session_index'] = $index;
+	}
+
 }

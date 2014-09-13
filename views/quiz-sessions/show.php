@@ -1,19 +1,14 @@
 <h1>Confirm Quiz Details</h1>
 <div class="action-buttons ui-helper-clearfix">
-	<?php if (App::can(Perm::ACTION_EDIT, $quiz_session->getQuiz())) : ?>
-		<a class="button" data-icon="pencil" href="<?= site_url('quizzes/show/' . $quiz_session->getQuizId()); ?>">
-			Edit Quiz
-		</a>
-	<?php endif; ?>
 
 	<?php if (App::can(Perm::ACTION_EDIT, $quiz_session)) : ?>
 		<a class="button" data-icon="pencil" href="<?= site_url('quiz-sessions/edit/' . $quiz_session->getId()); ?>">
-			Edit Clickers
+			Edit Details
 		</a>
 	<?php endif; ?>
 
 	<?php if (App::hasPerm(Perm::QUIZSESSION_CREATE) && App::can(Perm::ACTION_EDIT, $quiz_session)) : ?>
-		<a class="button" data-icon="circle-triangle-e" href="<?= site_url('quiz-sessions/question/' . $quiz_session->getId()); ?>/next">
+		<a class="button" data-icon="circle-triangle-e" href="<?= site_url('quiz-sessions/start/' . $quiz_session->getId()); ?>/1">
 			<?= $do_resume ? 'Resume' : 'Start Quiz'; ?>
 		</a>
 	<?php endif; ?>
@@ -26,6 +21,13 @@
 	<div class="form-field-wrapper">
 		<label class="form-field-label" for="quiz_id">Quiz</label>
 		<span id="quiz_id"><?= $quiz_session; ?> (<?= $quiz_session->getQuiz()->getNumQuestions() . ' Questions'; ?>)</span>
+
+		<?php if (App::can(Perm::ACTION_EDIT, $quiz_session->getQuiz())) : ?>
+			&nbsp;&nbsp;
+			<a class="small-link" href="<?= site_url('questions/?quiz_id=' . $quiz_session->getQuizId()); ?>">
+				edit
+			</a>
+		<?php endif; ?>
 	</div>
 
 	<div class="form-field-wrapper">

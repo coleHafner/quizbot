@@ -6,11 +6,13 @@ class QuizSessionsController extends LoggedInApplicationController {
 		$q = Query::create();
 		$q->join(QuizSession::QUIZ_ID, Quiz::ID);
 		$q->add(Quiz::CLASSROOM_ID, App::getClassroomId());
+		$q->orderBy(QuizSession::OPENED, Query::DESC);
 		$q = QuizSession::getQuery(@$_GET, $q);
 		$quiz = !empty($_REQUEST['quiz_id']) ? Quiz::retrieveByPK($_REQUEST['quiz_id']) : null;
 
 		if ($quiz && App::can(Perm::ACTION_EDIT, $quiz)) {
 			$q->add(QuizSession::QUIZ_ID, $quiz->getId());
+			$q->add(QuizSession::CLOSED, null, Query::IS_NOT_NULL);
 		}
 
 		// paginate
@@ -37,6 +39,7 @@ class QuizSessionsController extends LoggedInApplicationController {
 			$manager = QuizSessionManager::create($_REQUEST, App::getSession(), $id);
 		}
 
+		$this['quizzes'] = App::getClassroom()->getQuizzesEligibleForSession();
 		$this['quiz_session'] = $manager->getQuizSession()->fromArray($_REQUEST);
 	}
 
@@ -46,35 +49,60 @@ class QuizSessionsController extends LoggedInApplicationController {
 		$this['do_resume'] = $do_resume;
 	}
 
-	function question($id, $action) {
-
+	function start($id, $resume = false) {
 		$manager = $this->_getSessionManager($id);
-		$manager->closeLastQuestion();
-
-		$question = $manager->getPrevQuestion();
-
-		if ($action == 'next') {
-			$question = $manager->getNextQuestion();
-		}
-
-		if ($action == 'next' && !$question && $manager->sessionIsOver()) {
-			$this->redirect(site_url('quiz-sessions/end') . '/' . $manager->getQuizSessionId());
-		}
-
-		$manager->addSessionQuestion($question);
-		$this['question'] = $question;
-		$this['quiz_session'] = $manager->getQuizSession();
+		$manager->setAllQuestions();
+		$resume = (int) $resume;
+		$index = App::setQuizSessionIndex(0);
+		$this->redirect(site_url('quiz-sessions/switch-question/' . $manager->getQuizSessionId() . '/next/' . $resume));
 	}
 
-	function end($id) {
-		$quiz_session = QuizSession::retrieveByPk($id);
+	function switchQuestion($id, $direction = 'next', $resume = false) {
 
-		if (!$quiz_session) {
-			throw new RuntimeException('Error: Quiz session with id "' . $id . '" does not exist.');
+		$manager = $this->_getSessionManager($id);
+
+		if ($resume == true) {
+			$index = $manager->getFirstUnclosedQuestionIndex();
+		}else {
+
+			$index = App::getQuizSessionIndex();
+
+			if ($index < 0) {
+				$index = 0;
+			}
+
+			$manager->closeQuestionAtIndex($index);
+			$index = $direction == 'prev' ? $index - 1 : $index + 1;
 		}
 
-		$quiz_session->close();
-		$this['results'] = $quiz_session->getResults();
+		$is_last_question = $index > $manager->getNumQuestions();
+
+		if (($is_last_question && $manager->sessionIsOver())) {
+			$this->redirect(site_url('quiz-sessions/results/' . $manager->getQuizSessionId()));
+		}
+
+		$session_question = $manager->getQuestionAtIndex($index);
+		$question = $session_question->getQuestion();
+		App::setQuizSessionIndex($index);
+		$manager->openQuestionAtIndex($index);
+		$this->redirect(site_url('quiz-sessions/question/' . $manager->getQuizSessionId() . '/' . $question->getId()));
+	}
+
+	function question($session_id, $question_id) {
+		$manager = $this->_getSessionManager($session_id);
+		$question = Question::retrieveByPk($question_id);
+
+		if (!$question) {
+			throw new RuntimeException('Error: QUestion with id #' . $question_id . ' does not exist.');
+		}
+
+		$i = App::getQuizSessionIndex();
+		$this['prev_question'] = $manager->getQuestionAtIndex($i - 1);
+		$this['next_question'] = $manager->getQuestionAtIndex($i + 1);
+		$this['quiz_session'] = $manager->getQuizSession();
+		$this['question_num'] = ($i + 1);
+		$this['question'] = $question;
+		$this['answers'] = $question->getAnswers();
 	}
 
 	function results($id) {
@@ -85,7 +113,7 @@ class QuizSessionsController extends LoggedInApplicationController {
 		}
 
 		$quiz_session->close();
-		$this['results'] = $quiz_session->getResults();
+		$this['results'] = $quiz_session->getPercentageCorrect();
 	}
 
 	/**

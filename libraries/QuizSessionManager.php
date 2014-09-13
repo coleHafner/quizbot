@@ -1,16 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of QuizSessionManager
- *
- * @author colehafner
- */
 class QuizSessionManager {
 
 	/**
@@ -55,8 +44,7 @@ class QuizSessionManager {
 		if (!$this->quizSession || ($this->quizSession && !$this->quizSession->isNew())) {
 			$this->session = $quiz_session->getSession();
 			$this->quiz = $quiz_session->getQuiz();
-			$this->questions = $this->setQuestions();
-			$this->sessionQuestions = $this->setSessionQuestions();
+			$this->setAllQuestions();
 		}
 
 		return $this;
@@ -144,7 +132,6 @@ class QuizSessionManager {
 	}
 
 	/**
-	 *
 	 * @return	Quiz
 	 */
 	function getQuiz() {
@@ -152,135 +139,17 @@ class QuizSessionManager {
 	}
 
 	/**
-	 * @return boolean
-	 */
-	function closeQuestions() {
-		foreach ($this->getSessionQuestions() as $qsq) {
-			$qsq->close();
-			$qsq->save();
-		}
-
-		return true;
-	}
-
-	function closeLastQuestion() {
-
-		$questions = $this->getQuestions();
-		$index = $this->getCurrentIndex();
-		echo 'current index ';
-		var_dump($index);
-		echo '--------------------------' . PHP_EOL;
-		$question = @$questions[$index];
-
-		if (!$question) {
-			return false;
-		}
-
-		$qsq = $this->addSessionQuestion($question);
-		$qsq->close();
-		$qsq->save();
-		return true;
-	}
-
-	/**
-	 * @return boolean
-	 */
-	function sessionIsOver() {
-		if (count($this->getQuestions()) != $this->getSessionQuestions()) {
-			return false;
-		}
-
-		foreach ($this->getSessionQuestions() as $qsq) {
-			if (!$qsq->isClosed()
-				|| ($qsq->isClosed() && !$qsq->allStudentsHaveAnswered())) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Creates new QuizSessionQuestion record only if the question doesn't already exist.
-	 * @param	Question		$question
-	 * @return	QuizSessionQuestion
-	 */
-	function addSessionQuestion(Question $question) {
-		$qsq = QuizSessionQuestion::create()
-			->setQuizSession($this->getQuizSession())
-			->setQuestion($question)
-			->setQuestionText($question->getText())
-			->setOpened(time())
-			->saveOrCreate();
-
-		$qsq->setClosed(null);
-		$qsq->save();
-		$this->sessionQuestions[$qsq->getId()] = $qsq;
-		return $qsq;
-	}
-
-	/**
-	 * @return	Question[]
-	 */
-	function setQuestions() {
-
-		if (!$this->getQuiz()) {
-			throw new RuntimeException('Error: Cannot set questions without quiz.');
-		}
-
-		$this->questions = array();
-		$q = Query::create()->orderBy(Question::ID, Query::ASC);
-		$this->questions = $this->getQuiz()->getQuestions($q);
-		return $this->questions;
-	}
-
-	function setSessionQuestions() {
-		if (!$this->getQuizSession()) {
-			throw new RuntimeException('Error: Cannot set questions without quiz session.');
-		}
-
-		$this->sessionQuestions = array();
-		$q = Query::create()->orderBy(QuizSessionQuestion::QUESTION_ID, Query::ASC);
-		$qsqs = $this->getQuizSession()->getSessionQuestions($q);
-
-		foreach($qsqs as $qsq) {
-			$this->sessionQuestions[$qsq->getId()] = $qsq;
-		}
-
-		return $this->sessionQuestions;
-	}
-
-	/**
 	 * @return	Question[]
 	 */
 	function getQuestions() {
-		if ($this->questions) {
-			return $this->questions;
-		}
-
-		return $this->setQuestions();
+		return $this->questions;
 	}
 
 	/**
-	 * @return	Question[]
+	 * @return	QuizSessionQuestion[]
 	 */
 	function getSessionQuestions() {
-		if ($this->sessionQuestions) {
-			return $this->sessionQuestions;
-		}
-
-		return $this->setSessionQuestions();
-	}
-
-	/**
-	 * @return	Question
-	 */
-	function getNextQuestion() {
-		return $this->getQuestion(true);
-	}
-
-	function getPrevQuestion() {
-		return $this->getQuestion(false);
+		return $this->sessionQuestions;
 	}
 
 	/**
@@ -298,54 +167,140 @@ class QuizSessionManager {
 	}
 
 	/**
+	 * @param array $session
+	 */
+	function setQuiz(Quiz $quiz) {
+		$this->quiz = $quiz;
+	}
+
+	/**
+	 * Clears both question and sessionQuestions properties.
+	 * @return boolean
+	 */
+	function clearAllQuestions() {
+		$this->questions = array();
+		$this->sessionQuestions = array();
+		return true;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	function closeQuestionAtIndex($index) {
+		return $this->modifyQuestionAtIndex($index, 'close');
+	}
+
+	/**
+	 * @return boolean
+	 */
+	function openQuestionAtIndex($index) {
+		return $this->modifyQuestionAtIndex($index, 'open');
+	}
+
+	/**
+	 * @return	QuizSessionQuestion
+	 */
+	function getQuestionAtIndex($index) {
+		$qsq = @$this->sessionQuestions[$index];
+		return $qsq;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	function sessionIsOver() {
+		$all_questions_closed = QuizSessionQuestion::doCount(Query::create()
+			->add(QuizSessionQuestion::QUIZ_SESSION_ID, $this->getQuizSessionId())
+			->add(QuizSessionQUestion::CLOSED, null)
+		) == 0;
+
+		return ($this->hasSessionQuestions() && $all_questions_closed);
+	}
+
+	/**
+	 * Creates new QuizSessionQuestion record only if the question doesn't already exist.
+	 * @param	Question		$question
+	 * @return	QuizSessionQuestion
+	 */
+	function addSessionQuestion(Question $question) {
+		$qsq = QuizSessionQuestion::create()
+			->setQuizSession($this->getQuizSession())
+			->setQuestion($question)
+			->setQuestionText($question->getText())
+			->setOpened(time())
+			->saveOrCreate();
+
+		if ($qsq->isNew()) {
+			$qsq->save();
+		}
+
+		$this->sessionQuestions[] = $qsq;
+		return $qsq;
+	}
+
+	/**
+	 * Sets questions and quiz questions.
+	 */
+	function setAllQuestions() {
+
+		if (!$this->getQuiz()) {
+			throw new RuntimeException('Error: Cannot set questions without quiz.');
+		}
+
+		$this->clearAllQuestions();
+		$q = Query::create()->orderBy(Question::ID, Query::ASC);
+		$q->add(Question::ARCHIVED, null);
+		$this->questions = $this->getQuiz()->getQuestions($q);
+
+		foreach ($this->questions as $q) {
+			$this->addSessionQuestion($q);
+		}
+	}
+
+	function getFirstUnclosedQuestionIndex() {
+		foreach ($this->sessionQuestions as $index => $q) {
+			if (!$q->isClosed()) {
+				return $index;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Either opens or closes the question at the index passed.
+	 * Returns false if the question at index does not exist.
+	 * @param	int			$index
+	 * @param	string		$action		'open' or 'close'
+	 * @return	boolean
+	 */
+	function modifyQuestionAtIndex($index, $action) {
+
+		$qsq = $qsq = $this->getQuestionAtIndex($index);
+
+		if ($qsq) {
+			$outcome = $action == 'close' ? $qsq->close() : $qsq->open();
+			$qsq->save();
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return	int
+	 */
+	function getNumQuestions() {
+		return count($this->questions);
+	}
+
+	/**
 	 * @return	boolean
 	 */
 	private function hasSessionQuestions() {
 		return QuizSessionQuestion::doCount(Query::create()
 			->add(QuizSessionQuestion::QUIZ_SESSION_ID, $this->getQuizSessionId())
 		) > 0;
-	}
-
-	private function getCurrentIndex() {
-
-		if (!$this->hasSessionQuestions()) {
-			return 0;
-		}
-
-		$i = 0;
-
-		foreach ($this->getSessionQuestions() as $qsq) {
-			if (!$qsq->getClosed()) {
-				return $i;
-			}
-
-			$i++;
-		}
-
-		echo 'no closed qsqs --------------------------' . PHP_EOL;
-		echo 'qsq count: ' . count($this->getSessionQuestions()) . '--------------------------' . PHP_EOL;
-		echo 'q count: ' . count($this->getQuestions()) . '--------------------------' . PHP_EOL;
-
-		if (count($this->getSessionQuestions()) < count($this->getQuestions())) {
-			$index = count($this->getSessionQuestions()) + 1;
-			echo 'returning ' . $index . '----' . PHP_EOL;
-			return $index;
-		}
-
-		return null;
-	}
-
-	private function getQuestion($next) {
-		$i = $this->getCurrentIndex();
-		echo 'idnex @ question' . $i . '--------';
-
-		if ($i === null) {
-			return null;
-		}
-
-		$target_index = $next ? $i + 1 : $i - 1;
-		$questions = $this->getQuestions();
-		return @$questions[$target_index];
 	}
 
 	/**
@@ -355,9 +310,14 @@ class QuizSessionManager {
 	 */
 	static function create(array $request, Session $session) {
 		$manager = new QuizSessionManager(new QuizSession);
-		$manager->request = $request;
-		$manager->session = $session;
-		$manager->quiz = Quiz::retrieveByPk(@$request['quiz_id']);
+		$manager->setRequest($request);
+		$manager->setSession($session);
+
+		if (!empty($manager->request['quiz_id'])) {
+			$quiz = Quiz::retrieveByPk($request['quiz_id']);
+			$manager->setQuiz($quiz);
+		}
+
 		return $manager;
 	}
 

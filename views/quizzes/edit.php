@@ -8,10 +8,10 @@
 			<input id="quiz_name" type="text" name="name" value="<?php echo h($quiz->getName()) ?>" />
 		</div>
 
-		<div class="form-field-wrapper">
-			<label class="form-field-label" for="quiz_name">Classroom</label>
+		<?php if (App::hasPerm(Perm::CLASSROOMS_MANAGE)) : ?>
+			<div class="form-field-wrapper">
+				<label class="form-field-label" for="quiz_name">Classroom</label>
 
-			<?php if (App::hasPerm(Perm::CLASSROOMS_MANAGE)) : ?>
 				<select name="classroom_id">
 					<option id="">Select Classroom</option>
 
@@ -22,11 +22,12 @@
 						</option>
 					<?php endforeach; ?>
 				</select>
-			<?php else : ?>
-				<input name="classroom_id" type="hidden" value="<?= App::getClassroomId(); ?>" />
-			<?php endif; ?>
-		</div>
+			</div>
+		<?php else : ?>
+			<input name="classroom_id" type="hidden" value="<?= App::getClassroomId(); ?>" />
+		<?php endif; ?>
 	</div>
+	
 	<div class="form-action-buttons ui-helper-clearfix">
 		<span class="button" data-icon="disk">
 			<input type="submit" value="<?php echo $quiz->isNew() ? "Save" : "Save Changes" ?>" />

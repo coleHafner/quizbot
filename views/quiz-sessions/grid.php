@@ -26,14 +26,25 @@ if (isset($_REQUEST['dir'])) {
 					Quiz
 				</a>
 			</th>
+
 			<th class="ui-widget-header ">
-				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => QuizSession::SESSION_ID))) ?>">
-					<?php if ( @$_REQUEST['order_by'] == QuizSession::SESSION_ID): ?>
+				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => 'Correct'))) ?>">
+					<?php if ( @$_REQUEST['order_by'] == 'Correct'): ?>
 						<span class="ui-icon ui-icon-carat-1-<?php echo isset($_REQUEST['dir']) ? 's' : 'n' ?>"></span>
 					<?php endif ?>
-					Created By
+					Correct
 				</a>
 			</th>
+
+			<th class="ui-widget-header ">
+				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => QuizSession::CLOSED))) ?>">
+					<?php if ( @$_REQUEST['order_by'] == QuizSession::OPENED): ?>
+						<span class="ui-icon ui-icon-carat-1-<?php echo isset($_REQUEST['dir']) ? 's' : 'n' ?>"></span>
+					<?php endif ?>
+					Duration (mins)
+				</a>
+			</th>
+
 
 			<th class="ui-widget-header ">
 				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => QuizSession::OPENED))) ?>">
@@ -45,11 +56,11 @@ if (isset($_REQUEST['dir'])) {
 			</th>
 
 			<th class="ui-widget-header ">
-				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => QuizSession::CLOSED))) ?>">
-					<?php if ( @$_REQUEST['order_by'] == QuizSession::OPENED): ?>
+				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => QuizSession::SESSION_ID))) ?>">
+					<?php if ( @$_REQUEST['order_by'] == QuizSession::SESSION_ID): ?>
 						<span class="ui-icon ui-icon-carat-1-<?php echo isset($_REQUEST['dir']) ? 's' : 'n' ?>"></span>
 					<?php endif ?>
-					Closed
+					Created By
 				</a>
 			</th>
 
@@ -69,9 +80,10 @@ if (isset($_REQUEST['dir'])) {
 		<tr class="<?php echo ($key & 1) ? 'even' : 'odd' ?> ui-widget-content">
 			<td><?php echo h($quiz_session->getId()) ?>&nbsp;</td>
 			<td><?php echo h($quiz_session) ?>&nbsp;</td>
-			<td><?php echo $quiz_session->getCreatedByUser() ? h($quiz_session->getCreatedByUser()) : '-'; ?></td>
+			<td><?= $quiz_session->getPercentageCorrect(); ?></td>
+			<td><?= $quiz_session->getDuration() ? h($quiz_session->getDuration()) : '-'; ?>&nbsp;</td>
 			<td><?php echo h($quiz_session->getOpened(VIEW_TIMESTAMP_FORMAT)) ?>&nbsp;</td>
-			<td><?= $quiz_session->getClosed() ? h($quiz_session->getClosed(VIEW_TIMESTAMP_FORMAT)) : '-'; ?>&nbsp;</td>
+			<td><?php echo $quiz_session->getCreatedByUser() ? h($quiz_session->getCreatedByUser()) : '-'; ?></td>
 			<td><?php echo h($quiz_session->getStatus()) ?>&nbsp;</td>
 			<td>
 				<?php if (App::can(Perm::ACTION_EDIT, $quiz_session) && !$quiz_session->getClosed()) : ?>
@@ -88,7 +100,7 @@ if (isset($_REQUEST['dir'])) {
 					<a
 						class="button"
 						data-icon="star"
-						href="<?php echo site_url('quiz-session-attempts?session_id=' . $quiz_session->getId()) ?>">
+						href="<?php echo site_url('quiz-sessions/results/' . $quiz_session->getId()) ?>">
 						&nbsp;Results
 					</a>
 				<?php endif; ?>

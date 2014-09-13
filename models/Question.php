@@ -17,6 +17,14 @@ class Question extends baseQuestion {
 	 * @return	QuestionAnswer[]
 	 */
 	public function getAnswers(Query $q = null) {
+
+		if ($this->isTrueFalse()) {
+			return array(
+				QuestionAnswer::create()->setQuestion($this)->setText('True'),
+				QuestionAnswer::create()->setQuestion($this)->setText('False')
+			);
+		}
+
 		$q = !$q ? new Query : $q;
 		$q->add(QuestionAnswer::ARCHIVED, null);
 		return $this->getQuestionAnswers($q);
@@ -26,11 +34,23 @@ class Question extends baseQuestion {
 	 * @return	boolean
 	 */
 	public function hasAnswers() {
+		return $this->getNumAnswers() > 0;
+	}
+
+	/**
+	 * @return	int
+	 */
+	public function getNumAnswers() {
+
+		if ($this->isTrueFalse()) {
+			return 2;
+		}
+
 		return Query::create()
 			->setTable(QuestionAnswer::getTableName())
 			->add(QuestionAnswer::QUESTION_ID, $this->getId())
 			->add(QuestionAnswer::ARCHIVED, null)
-			->doCount() > 0;
+			->doCount();
 	}
 
 	/**

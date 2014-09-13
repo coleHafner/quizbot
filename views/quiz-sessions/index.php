@@ -1,13 +1,13 @@
 <h1>
 	<?php if (App::hasPerm(Perm::QUIZSESSION_CREATE)) : ?>
-		<a href="<?php echo site_url('quizzes/edit') ?>"
+		<a href="<?php echo site_url('quiz-sessions/edit') ?>"
 		   class="button"
 		   data-icon="plusthick"
 		   title="New Quiz">
 			Start Quiz
 		</a>
 	<?php endif; ?>
-	
+
 	Quiz Results
 </h1>
 

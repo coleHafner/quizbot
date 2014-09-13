@@ -43,7 +43,14 @@ class QuestionsController extends LoggedInApplicationController {
 	 * @return Question
 	 */
 	function edit($id = null) {
-		return $this->getQuestion($id)->fromArray(@$_GET);
+		$q = $this->getQuestion($id);
+		$this['question'] = $q->fromArray(@$_GET);
+		$this['quiz_id'] = $q->getQuizId();
+		$this['answers'] = !empty($_REQUEST['answers']) ? $_REQUEST['answers'] : array();
+
+		if (!$this['quiz_id'] && !empty($_REQUEST['quiz_id'])) {
+			$this['quiz_id'] = $_REQUEST['quiz_id'];
+		}
 	}
 
 	/**

@@ -26,6 +26,16 @@ if (isset($_REQUEST['dir'])) {
 					Name
 				</a>
 			</th>
+
+			<th class="ui-widget-header ">
+				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => 'NumQuestions'))) ?>">
+					<?php if ( @$_REQUEST['order_by'] == 'NumQuestions'): ?>
+						<span class="ui-icon ui-icon-carat-1-<?php echo isset($_REQUEST['dir']) ? 's' : 'n' ?>"></span>
+					<?php endif ?>
+					# Questions
+				</a>
+			</th>
+
 			<th class="ui-widget-header ">
 				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => Quiz::SESSION_ID))) ?>">
 					<?php if ( @$_REQUEST['order_by'] == Quiz::SESSION_ID): ?>
@@ -58,6 +68,7 @@ if (isset($_REQUEST['dir'])) {
 		<tr class="<?php echo ($key & 1) ? 'even' : 'odd' ?> ui-widget-content">
 			<td><?php echo h($quiz->getId()) ?>&nbsp;</td>
 			<td><?php echo h($quiz->getName()) ?>&nbsp;</td>
+			<td><?php echo h($quiz->getNumQuestions()) ?>&nbsp;</td>
 			<td><?php echo $quiz->getCreatedByUser() ? h($quiz->getCreatedByUser()) : '-'; ?></td>
 			<td><?php echo h($quiz->getCreated(VIEW_TIMESTAMP_FORMAT)) ?>&nbsp;</td>
 			<td><?php echo h($quiz->getStatus()) ?>&nbsp;</td>
@@ -111,7 +122,7 @@ if (isset($_REQUEST['dir'])) {
 					<a
 						class="button"
 						data-icon="star"
-						href="<?php echo site_url('quiz-session-attempts?quiz_id=' . $quiz->getId()) ?>">
+						href="<?php echo site_url('quiz-sessions?quiz_id=' . $quiz->getId()) ?>">
 						&nbsp;Results
 					</a>
 				<?php endif; ?>

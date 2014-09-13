@@ -136,4 +136,88 @@ class QuizSession extends baseQuizSession {
 		return $this->getQuizSessionDevices();
 	}
 
+	/**
+	 * @return	Sets the closed field to current timestamp.
+	 */
+	public function close() {
+		$this->setClosed(time());
+		return $this->save();
+	}
+
+	/**
+	 * Returns percentage.
+	 * @return	string
+	 */
+	public function getPercentageCorrect() {
+		if ($this->getNumAttempts() == 0) {
+			return '0%';
+		}
+
+		return round($this->getNumCorrect() . '/' . $this->getNumAttempts()) . '%';
+	}
+
+	/**
+	 * @return	int
+	 */
+	public function getNumCorrect() {
+		return QuizSessionAttempt::doCount(Query::create()
+			->add(QuizSessionAttempt::QUIZ_SESSION_ID, $this->getId())
+			->add(QuizSessionAttempt::CORRECT, true)
+		);
+	}
+
+	/**
+	 * @return	int
+	 */
+	public function getNumAttempts() {
+		return QuizSessionAttempt::doCount(Query::create()
+			->add(QuizSessionAttempt::QUIZ_SESSION_ID, $this->getId())
+		);
+	}
+
+	/**
+	 * @return	string
+	 */
+	public function getStatus() {
+		return $this->getClosed() ? 'Closed' : 'In Progress';
+	}
+
+	/**
+	 * Returns the difference in minutes between opened and closed in human readable format.
+	 * @return	string
+	 */
+	public function getDuration() {
+
+		if (!$this->getClosed()) {
+			return null;
+		}
+
+		$start = new DateTime;
+		$start->setTimestamp($this->getOpened(null));
+
+		$end = new DateTime();
+		$end->setTimestamp($this->getClosed(null));
+
+		$diff = $start->diff($end);
+		$secs_plural = $diff->s == 1 ? '' : 's';
+		$format = '%s second' . $secs_plural;
+
+		if ($diff->i > 0) {
+			$min_plural = $diff->i == 1 ? '' : 's';
+			$format = '%i min' . $min_plural;
+		}
+
+		if ($diff->h > 0) {
+			$hour_plural = $diff->h == 1 ? '' : 's';
+			$format = '%h hour' . $hour_plural . ' ' . $format;
+		}
+
+		if ($diff->d > 0) {
+			$day_plural = $diff->d == 1 ? '' : 's';
+			$format = '%d day' . $day_plural . ' ' . $format;
+		}
+
+		return $diff->format($format);
+	}
+
 }

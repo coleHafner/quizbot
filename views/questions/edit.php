@@ -120,7 +120,7 @@
 				</select>
 			</div>
 		<?php else : ?>
-			<input type="hidden" name="quiz_id" value="<?php echo $quiz ? $quiz->getId() : ''; ?>" />
+			<input type="hidden" name="quiz_id" value="<?= $quiz_id; ?>" />
 		<?php endif; ?>
 
 		<div class="form-field-wrapper">
@@ -179,7 +179,7 @@
 								for ($i = 1; $i <= 4; $i++) : ?>
 									<li>
 										<input type="radio" name="correct_answer" value="<?= $i; ?>" <?= $i == 1 ? 'checked' : ''; ?> />
-										<input type="text"  name="answers[n<?= $i; ?>]" value="" />
+										<input type="text"  name="answers[n<?= $i; ?>]" value="<?= !empty($answers['n' . $i]) ? $answers['n' . $i] : ''; ?>" />
 
 										<?php if ($i > 2) : ?>
 											<a href="#"

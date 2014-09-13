@@ -49,8 +49,12 @@ class Classroom extends baseClassroom {
 		$q = Query::create()
 			->add(Quiz::CLASSROOM_ID, $this->getId())
 			->orderBy(Quiz::NAME, Query::ASC);
-		
+
 		return Quiz::doSelect($q);
+	}
+
+	function getQuizzesEligibleForSession() {
+		return Quiz::getQuizzesEligibleForSession(Query::create()->add(Quiz::CLASSROOM_ID, $this->getId()));
 	}
 
 	function __toString() {

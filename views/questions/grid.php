@@ -50,6 +50,15 @@ if (isset($_REQUEST['dir'])) {
 			</th>
 
 			<th class="ui-widget-header ">
+				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => 'NumAnswers'))) ?>">
+					<?php if ( @$_REQUEST['order_by'] == 'NumAnswers'): ?>
+						<span class="ui-icon ui-icon-carat-1-<?php echo isset($_REQUEST['dir']) ? 's' : 'n' ?>"></span>
+					<?php endif ?>
+					# Answers
+				</a>
+			</th>
+
+			<th class="ui-widget-header ">
 				<a href="?<?php echo http_build_query(array_merge($_get_args, array('order_by' => Question::SESSION_ID))) ?>">
 					<?php if ( @$_REQUEST['order_by'] == Question::SESSION_ID): ?>
 						<span class="ui-icon ui-icon-carat-1-<?php echo isset($_REQUEST['dir']) ? 's' : 'n' ?>"></span>
@@ -88,6 +97,7 @@ if (isset($_REQUEST['dir'])) {
 
 			<td><?php echo h($question->getText()) ?>&nbsp;</td>
 			<td><?php echo h($question->getTypeName()) ?>&nbsp;</td>
+			<td><?php echo h($question->getNumAnswers()) ?>&nbsp;</td>
 			<td><?php echo $question->getCreatedByUser() ? h($question->getCreatedByUser()) : '-'; ?>&nbsp;</td>
 			<td><?php echo h($question->getCreated(VIEW_TIMESTAMP_FORMAT)) ?>&nbsp;</td>
 			<td><?php echo h($question->getStatus()) ?>&nbsp;</td>
