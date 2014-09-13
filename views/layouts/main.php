@@ -62,7 +62,7 @@
 				</div>
 
 				<div class="pull-right user-credentials">
-					Logged in as <a href="<?= site_url('users/' . App::getUserId()); ?>"> <?= App::getUser(); ?></a>
+					Logged in as <a href="<?= site_url('users/edit/' . App::getUserId()); ?>"> <?= App::getUser(); ?></a>
 					&nbsp;&nbsp;
 					<a href="/logout">Logout</a>
 				</div>

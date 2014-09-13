@@ -8,6 +8,7 @@
  */
 abstract class baseUserRole extends ApplicationModel {
 
+	const ID = 'user_role.id';
 	const USER_ID = 'user_role.user_id';
 	const ROLE_ID = 'user_role.role_id';
 	const SESSION_ID = 'user_role.session_id';
@@ -47,27 +48,27 @@ abstract class baseUserRole extends ApplicationModel {
 	 * @var string[]
 	 */
 	protected static $_primaryKeys = array(
-		'user_id',
-		'role_id',
+		'id',
 	);
 
 	/**
 	 * string name of the primary key column
 	 * @var string
 	 */
-	protected static $_primaryKey = '';
+	protected static $_primaryKey = 'id';
 
 	/**
 	 * true if primary key is an auto-increment column
 	 * @var bool
 	 */
-	protected static $_isAutoIncrement = false;
+	protected static $_isAutoIncrement = true;
 
 	/**
 	 * array of all fully-qualified(table.column) columns
 	 * @var string[]
 	 */
 	protected static $_columns = array(
+		UserRole::ID,
 		UserRole::USER_ID,
 		UserRole::ROLE_ID,
 		UserRole::SESSION_ID,
@@ -82,6 +83,7 @@ abstract class baseUserRole extends ApplicationModel {
 	 * @var string[]
 	 */
 	protected static $_columnNames = array(
+		'id',
 		'user_id',
 		'role_id',
 		'session_id',
@@ -96,6 +98,7 @@ abstract class baseUserRole extends ApplicationModel {
 	 * @var string[]
 	 */
 	protected static $_columnTypes = array(
+		'id' => Model::COLUMN_TYPE_INTEGER,
 		'user_id' => Model::COLUMN_TYPE_INTEGER,
 		'role_id' => Model::COLUMN_TYPE_INTEGER,
 		'session_id' => Model::COLUMN_TYPE_INTEGER,
@@ -104,6 +107,12 @@ abstract class baseUserRole extends ApplicationModel {
 		'created' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
 		'updated' => Model::COLUMN_TYPE_INTEGER_TIMESTAMP,
 	);
+
+	/**
+	 * `id` INTEGER NOT NULL DEFAULT ''
+	 * @var int
+	 */
+	protected $id;
 
 	/**
 	 * `user_id` INTEGER NOT NULL DEFAULT ''
@@ -146,6 +155,21 @@ abstract class baseUserRole extends ApplicationModel {
 	 * @var int
 	 */
 	protected $updated;
+
+	/**
+	 * Gets the value of the id field
+	 */
+	function getId() {
+		return $this->id;
+	}
+
+	/**
+	 * Sets the value of the id field
+	 * @return UserRole
+	 */
+	function setId($value) {
+		return $this->setColumnValue('id', $value, Model::COLUMN_TYPE_INTEGER);
+	}
 
 	/**
 	 * Gets the value of the user_id field
@@ -357,8 +381,8 @@ abstract class baseUserRole extends ApplicationModel {
 	 * the one input.
 	 * @return UserRole
 	 */
-	 static function retrieveByPK($the_pk) {
-		throw new Exception('This table has more than one primary key.  Use retrieveByPKs() instead.');
+	 static function retrieveByPK($id) {
+		return static::retrieveByPKs($id);
 	}
 
 	/**
@@ -366,24 +390,28 @@ abstract class baseUserRole extends ApplicationModel {
 	 * the ones input.
 	 * @return UserRole
 	 */
-	static function retrieveByPKs($user_id, $role_id) {
-		if (null === $user_id) {
+	static function retrieveByPKs($id) {
+		if (null === $id) {
 			return null;
 		}
-		if (null === $role_id) {
-			return null;
-		}
-		$args = func_get_args();
 		if (static::$_poolEnabled) {
-			$pool_instance = static::retrieveFromPool(implode('-', $args));
+			$pool_instance = static::retrieveFromPool($id);
 			if (null !== $pool_instance) {
 				return $pool_instance;
 			}
 		}
 		$q = new Query;
-		$q->add('user_id', $user_id);
-		$q->add('role_id', $role_id);
+		$q->add('id', $id);
 		return static::doSelectOne($q);
+	}
+
+	/**
+	 * Searches the database for a row with a id
+	 * value that matches the one provided
+	 * @return UserRole
+	 */
+	static function retrieveById($value) {
+		return UserRole::retrieveByPK($value);
 	}
 
 	/**
@@ -455,6 +483,7 @@ abstract class baseUserRole extends ApplicationModel {
 	 * @return UserRole
 	 */
 	function castInts() {
+		$this->id = (null === $this->id) ? null : (int) $this->id;
 		$this->user_id = (null === $this->user_id) ? null : (int) $this->user_id;
 		$this->role_id = (null === $this->role_id) ? null : (int) $this->role_id;
 		$this->session_id = (null === $this->session_id) ? null : (int) $this->session_id;
@@ -743,6 +772,12 @@ abstract class baseUserRole extends ApplicationModel {
 	 */
 	function validate() {
 		$this->_validationErrors = array();
+		if (null === $this->getuser_id()) {
+			$this->_validationErrors[] = 'user_id must not be null';
+		}
+		if (null === $this->getrole_id()) {
+			$this->_validationErrors[] = 'role_id must not be null';
+		}
 		if (null === $this->getsession_id()) {
 			$this->_validationErrors[] = 'session_id must not be null';
 		}

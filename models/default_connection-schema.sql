@@ -336,6 +336,7 @@ DROP TABLE IF EXISTS `user_role`;
 
 CREATE TABLE `user_role`
 (
+	`id` INTEGER(10) NOT NULL AUTO_INCREMENT,
 	`user_id` INTEGER(10) NOT NULL,
 	`role_id` INTEGER(10) NOT NULL,
 	`session_id` INTEGER(10) NOT NULL,
@@ -343,10 +344,10 @@ CREATE TABLE `user_role`
 	`archived` INT(10),
 	`created` INT(10),
 	`updated` INT(10),
-	PRIMARY KEY (`user_id`,`role_id`),
-	INDEX `classroom_id` (`classroom_id`(10)),
-	INDEX `classroom_id_2` (`classroom_id`(10)),
-	INDEX `session_id` (`session_id`(10)),
+	PRIMARY KEY (`id`),
+	INDEX `user_role_ibfk_1` (`user_id`(10)),
+	INDEX `user_role_ibfk_2` (`classroom_id`(10)),
+	INDEX `user_role_ibfk_3` (`session_id`(10)),
 	CONSTRAINT `user_role_ibfk_1`
 		FOREIGN KEY (`user_id`)
 		REFERENCES `user` (`id`)

@@ -64,7 +64,7 @@ class ClassroomsController extends LoggedInApplicationController {
 				$teacher = !empty($_REQUEST['teacher_id']) ? User::retrieveByPk($_REQUEST['teacher_id']) : null;
 
 				if ($teacher && !$teacher->hasClassroom($classroom)) {
-					$teacher->addRole(Role::TEACHER, $classroom);
+					$teacher->addRole(Role::TEACHER, App::getSession(), $classroom->getId());
 				}
 
 				$this->flash['messages'][] = 'Classroom saved';
@@ -123,14 +123,18 @@ class ClassroomsController extends LoggedInApplicationController {
 			$id = $_REQUEST[Classroom::getPrimaryKey()];
 		}
 
+
+
 		if ('' === $id || null === $id) {
 			// if no primary key provided, create new Classroom
-			$this['classroom'] = new Classroom;
+			$this['room'] = new Classroom;
 		} else {
 			// if primary key provided, retrieve the record from the db
-			$this['classroom'] = Classroom::retrieveByPK($id);
+			$this['room'] = Classroom::retrieveByPK($id);
 		}
-		return $this['classroom'];
+
+		error_log('classroom id: ' . $this['room']->getId() . ' name: ' . $this['room']->getName());
+		return $this['room'];
 	}
 
 }

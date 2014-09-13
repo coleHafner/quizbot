@@ -71,10 +71,15 @@ $(window).resize(function() {
 	<?= $question; ?>
 </div>
 
-
 <div class="ui-helper-clearfix">
-	<?php foreach ($answers as $i => $qa) : ?>
-		<div class="answer-canvas <?= $i%2 ? 'pull-right' : 'pull-left'; ?> <?= ' answer-' . $i; ?>">
+	<?php
+	$total = count($answers);
+	foreach ($answers as $i => $qa) :
+		$odd = $i%2 == 0;
+		$is_last = $i == ($total - 1);
+	?>
+		<div class="answer-canvas <?= !$odd ? 'pull-right' : 'pull-left'; ?> <?= ' answer-' . $i; ?>"
+			<?= $odd && $is_last ? ' style="width:100%;"' : ''; ?>>
 			<div class="inner"><?= $qa; ?></div>
 		</div>
 	<?php endforeach; ?>

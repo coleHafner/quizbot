@@ -262,8 +262,9 @@
     </index>
   </table>
   <table name="user_role" phpName="UserRole">
-    <column name="user_id" phpName="UserId" type="INTEGER" size="10" primaryKey="true" required="true"/>
-    <column name="role_id" phpName="RoleId" type="INTEGER" size="10" primaryKey="true" required="true"/>
+    <column name="id" phpName="Id" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="user_id" phpName="UserId" type="INTEGER" size="10" required="true"/>
+    <column name="role_id" phpName="RoleId" type="INTEGER" size="10" required="true"/>
     <column name="session_id" phpName="SessionId" type="INTEGER" size="10" required="true"/>
     <column name="classroom_id" phpName="ClassroomId" type="INTEGER" size="10" required="false"/>
     <column name="archived" phpName="Archived" type="INTEGER_TIMESTAMP" size="10" required="false"/>
@@ -278,13 +279,13 @@
     <foreign-key foreignTable="session" name="user_role_ibfk_3" onUpdate="CASCADE">
       <reference local="session_id" foreign="id"/>
     </foreign-key>
-    <index name="classroom_id">
+    <index name="user_role_ibfk_1">
+      <index-column name="user_id"/>
+    </index>
+    <index name="user_role_ibfk_2">
       <index-column name="classroom_id"/>
     </index>
-    <index name="classroom_id_2">
-      <index-column name="classroom_id"/>
-    </index>
-    <index name="session_id">
+    <index name="user_role_ibfk_3">
       <index-column name="session_id"/>
     </index>
   </table>

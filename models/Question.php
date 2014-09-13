@@ -14,6 +14,13 @@ class Question extends baseQuestion {
 	);
 
 	/**
+	 * @return	string
+	 */
+	public function __toString() {
+		return $this->getText();
+	}
+
+	/**
 	 * @return	QuestionAnswer[]
 	 */
 	public function getAnswers(Query $q = null) {

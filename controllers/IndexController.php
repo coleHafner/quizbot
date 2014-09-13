@@ -6,6 +6,8 @@ class IndexController extends ApplicationController {
 		if (!App::isLoggedIn()) {
 			redirect('login');
 		}
+
+		$this->redirect(site_url('dashboard'));
 	}
 
 	function login() {

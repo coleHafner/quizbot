@@ -75,9 +75,10 @@ class QuizSessionsController extends LoggedInApplicationController {
 			$index = $direction == 'prev' ? $index - 1 : $index + 1;
 		}
 
-		$is_last_question = $index > $manager->getNumQuestions();
+		$is_last_question = $index > ($manager->getNumQuestions() - 1);
 
 		if (($is_last_question && $manager->sessionIsOver())) {
+			$manager->getQuizSession()->close();
 			$this->redirect(site_url('quiz-sessions/results/' . $manager->getQuizSessionId()));
 		}
 
@@ -106,14 +107,15 @@ class QuizSessionsController extends LoggedInApplicationController {
 	}
 
 	function results($id) {
-		$quiz_session = QuizSession::retrieveByPk($id);
+		$manager = $this->_getSessionManager($id);
 
-		if (!$quiz_session) {
+		if (!$manager->getQuizSession()) {
 			throw new RuntimeException('Error: Quiz session with id "' . $id . '" does not exist.');
 		}
 
-		$quiz_session->close();
-		$this['results'] = $quiz_session->getPercentageCorrect();
+		$this['manager'] = $manager;
+		$this['quiz_session'] = $manager->getQuizSession();
+		$this['results'] = $manager->getQuizSession()->getPercentageCorrect();
 	}
 
 	/**

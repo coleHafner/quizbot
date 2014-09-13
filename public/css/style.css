@@ -331,11 +331,20 @@ ul {
 	font-size: 18px;
 	text-align:center;
 	padding: 30px !important;
-	margin-bottom:20px !important;
+	margin-bottom:10px !important;
+}
+
+.results-canvas {
+	height:100%;
+	padding: 20px !important;
+	font-size: 25px;
+	text-align: center;
+	min-height:500px;
+	line-height: 500px;
 }
 
 .answer-canvas {
-	width: 49%;
+	width: 49.5%;
 	border:1px solid #000;
 	border-radius:5px;
 	margin-bottom: 10px;
